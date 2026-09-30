@@ -5,8 +5,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "nest build",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "prisma generate && nest build",
+    "typecheck": "prisma generate && tsc --noEmit -p tsconfig.json",
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "postinstall": "prisma generate",
     "start": "nest start",
