@@ -40,6 +40,8 @@ export interface TokenOptions {
   issuedAtOffsetSec?: number;
   kid?: string;
   omitSub?: boolean;
+  /** Authorized party claim (auth-contract 1.2). Omitted when undefined. */
+  azp?: string;
 }
 
 /** Signs a Core Hub-shaped RS256 access token. */
@@ -56,6 +58,10 @@ export async function signCoreHubToken(
 
   if (!options.omitSub) {
     payload.sub = options.sub ?? 'user-003';
+  }
+
+  if (options.azp !== undefined) {
+    payload.azp = options.azp;
   }
 
   const jwt = new SignJWT(payload)

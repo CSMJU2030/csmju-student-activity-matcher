@@ -11,6 +11,10 @@ export enum TokenRejectionReason {
   INVALID_ISSUER = 'invalid_issuer',
   INVALID_AUDIENCE = 'invalid_audience',
   INVALID_CLAIMS = 'invalid_claims',
+  /** auth-contract 1.2 step 9 - e.g. a 7-day refresh token used as an access token */
+  TOKEN_LIFETIME_EXCEEDED = 'token_lifetime_exceeded',
+  /** auth-contract 1.2 step 10 - a token issued for another subsystem */
+  INVALID_AZP = 'invalid_azp',
 }
 
 /** Raised by the JWKS/verification layer. Turned into HTTP 401 by the guard. */

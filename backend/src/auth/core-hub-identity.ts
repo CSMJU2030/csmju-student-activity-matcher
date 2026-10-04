@@ -32,5 +32,7 @@ export interface CoreHubTokenPayload {
   iss: string;
   aud: string | string[];
   iat?: number;
+  /** Authorized party: the subsystem this token was issued for (auth-contract 1.2). */
+  azp?: string;
   exp?: number;
 }

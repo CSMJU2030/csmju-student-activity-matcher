@@ -23,6 +23,7 @@ const CONFIG: Record<string, unknown> = {
   'coreHub.jwksMinRefreshIntervalMs': 0,
   'coreHub.jwksRequestTimeoutMs': 1_000,
   'coreHub.clockToleranceSec': 0,
+  subsystemId: 'csmju-student-activity-matcher',
 };
 
 const config = {
@@ -155,6 +156,32 @@ describe('CoreHubTokenVerifier - authentication tests (spec §13, §36)', () => 
 
     await expect(verifier.verify(token)).rejects.toMatchObject({
       reason: TokenRejectionReason.INVALID_CLAIMS,
+    });
+  });
+
+  describe('auth-contract 1.2 steps 9-10', () => {
+    it('rejects a token that lives longer than an access token (e.g. a 7-day refresh token)', async () => {
+      const token = await signCoreHubToken(key, { expiresInSec: 7 * 24 * 3600 });
+      await expect(verifier.verify(token)).rejects.toMatchObject({
+        reason: TokenRejectionReason.TOKEN_LIFETIME_EXCEEDED,
+      });
+    });
+
+    it('allows up to 60 s over the 900 s lifetime', async () => {
+      await expect(verifier.verify(await signCoreHubToken(key, { expiresInSec: 960 }))).resolves.toBeDefined();
+      await expect(verifier.verify(await signCoreHubToken(key, { expiresInSec: 961 }))).rejects.toMatchObject({
+        reason: TokenRejectionReason.TOKEN_LIFETIME_EXCEEDED,
+      });
+    });
+
+    it('accepts a token issued for this subsystem, or with no azp yet', async () => {
+      await expect(verifier.verify(await signCoreHubToken(key, { azp: 'csmju-student-activity-matcher' }))).resolves.toBeDefined();
+      await expect(verifier.verify(await signCoreHubToken(key))).resolves.toBeDefined();
+    });
+
+    it('rejects a token issued for another subsystem', async () => {
+      const token = await signCoreHubToken(key, { azp: 'csmju-equipment-service' });
+      await expect(verifier.verify(token)).rejects.toMatchObject({ reason: TokenRejectionReason.INVALID_AZP });
     });
   });
 
