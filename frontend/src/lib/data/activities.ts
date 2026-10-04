@@ -1,4 +1,4 @@
-import { fetchJsonWithAuth, toQuery } from "@/lib/api/apiClient";
+import { HttpError, fetchJsonWithAuth, toQuery } from "@/lib/api/apiClient";
 /** The collection is paginated (api-conventions); 100 is the largest page. */
 const MAX_PAGE = 100;
 const ALL = toQuery({ limit: MAX_PAGE });
@@ -41,7 +41,8 @@ export async function getActivityById(id: string, token: string = ""): Promise<A
   try {
     return await fetchJsonWithAuth(`/activities/${id}`);
   } catch (error) {
-    console.error("fetchActivityById error:", error);
+    // 404 is a normal answer (e.g. right after the activity was cancelled)
+    if (!(error instanceof HttpError && error.status === 404)) console.error("fetchActivityById error:", error);
     return null;
   }
 }

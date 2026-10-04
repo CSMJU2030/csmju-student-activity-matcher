@@ -22,9 +22,20 @@ interface SyncClientProps {
     logs: SyncLogData[];
 }
 
+/**
+ * Admission years still studying, newest first, labelled with their class year.
+ * The Thai academic year (B.E.) starts in June - same rule as the backend's
+ * classYearFromEntryYear.
+ */
+function admissionYears(now = new Date()) {
+    const academicYear = now.getFullYear() + 543 - (now.getMonth() < 5 ? 1 : 0);
+    return [0, 1, 2, 3, 4].map((i) => ({ value: String(academicYear - i), classYear: i + 1 }));
+}
+
 export function SyncClient({ logs }: SyncClientProps) {
     const router = useRouter();
-    const [entryYear, setEntryYear] = useState("2567");
+    const years = admissionYears();
+    const [entryYear, setEntryYear] = useState(years[0].value);
     const [isSyncing, setIsSyncing] = useState(false);
     const [result, setResult] = useState<{ success?: boolean; count?: number; skipped?: number; message?: string, error?: string } | null>(null);
 
@@ -97,11 +108,11 @@ export function SyncClient({ logs }: SyncClientProps) {
                                     className="flex-1 bg-card border border-slate-300 rounded-lg px-4 py-2.5 text-foreground text-sm focus:ring-2 focus:ring-blue-500 focus:border-primary transition-all outline-none"
                                     disabled={isSyncing}
                                 >
-                                    <option value="2567">2567 (Freshmen)</option>
-                                    <option value="2566">2566 (Sophomore)</option>
-                                    <option value="2565">2565 (Junior)</option>
-                                    <option value="2564">2564 (Senior)</option>
-                                    <option value="2563">2563 (Super Senior)</option>
+                                    {years.map((y) => (
+                                        <option key={y.value} value={y.value}>
+                                            {y.value} (ปี {y.classYear}{y.classYear > 4 ? " ขึ้นไป" : ""})
+                                        </option>
+                                    ))}
                                 </select>
 
                                 <button

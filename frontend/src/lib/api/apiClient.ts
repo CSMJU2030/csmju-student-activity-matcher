@@ -68,11 +68,18 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
   return fetch(`${SERVER_BASE}${url}`, { cache: 'no-store', ...init, headers });
 }
 
-/** GET + unwrap the `{ success, data }` envelope; throws on HTTP errors. */
+/** A non-2xx answer; `status` lets callers treat e.g. 404 as "not there" instead of an error. */
+export class HttpError extends Error {
+  constructor(readonly status: number) {
+    super(`HTTP error! status: ${status}`);
+  }
+}
+
+/** GET + unwrap the `{ success, data }` envelope; throws HttpError on HTTP errors. */
 export async function fetchJsonWithAuth(url: string, options: FetchOptions = {}) {
   const response = await fetchWithAuth(url, options);
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    throw new HttpError(response.status);
   }
   const json = await response.json();
   return json?.data !== undefined ? json.data : json;
