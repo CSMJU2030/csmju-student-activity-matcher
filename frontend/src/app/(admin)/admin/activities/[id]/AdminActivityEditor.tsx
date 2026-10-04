@@ -10,6 +10,7 @@ import { StudentData } from "@/lib/data/students";
 import { getInitials } from "@/lib/utils";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { InterestMultiSelect } from "@/components/InterestMultiSelect";
+import { Icon } from "@/components/Icon";
 
 interface Props {
     activity: ActivityData;
@@ -53,14 +54,14 @@ export function AdminActivityEditor({ activity, allInterests, allStudents }: Pro
         const res = await updateActivity(activity.id, patch);
         setBusy(false);
         if (res.success) {
-            flash(true, notifiesParticipants ? "✅ บันทึกแล้ว และแจ้งเตือนผู้เข้าร่วมเรื่องวัน/เวลา/สถานที่ใหม่แล้ว" : "✅ บันทึกแล้ว");
+            flash(true, notifiesParticipants ? "บันทึกแล้ว และแจ้งเตือนผู้เข้าร่วมเรื่องวัน/เวลา/สถานที่ใหม่แล้ว" : "บันทึกแล้ว");
             router.refresh();
         } else flash(false, res.error || "บันทึกไม่สำเร็จ");
     };
 
     const kick = async (studentId: string) => {
         const res = await removeActivityParticipant(activity.id, studentId);
-        if (res.success) { flash(true, "✅ นำออกแล้ว (แจ้งเตือนเจ้าตัวแล้ว)"); router.refresh(); }
+        if (res.success) { flash(true, "นำออกแล้ว (แจ้งเตือนเจ้าตัวแล้ว)"); router.refresh(); }
         else flash(false, res.error || "นำออกไม่สำเร็จ");
     };
 
@@ -70,20 +71,20 @@ export function AdminActivityEditor({ activity, allInterests, allStudents }: Pro
         else flash(false, res.error || "ลบไม่สำเร็จ");
     };
 
-    const input = "w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50";
+    const input = "w-full px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
     const set = (k: keyof typeof initial) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm({ ...form, [k]: e.target.value });
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
-            <Link href="/admin/activities" className="text-sm text-muted-foreground hover:text-primary">← กลับไปรายการกิจกรรม</Link>
+            <Link href="/admin/activities" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><Icon name="arrow-left" className="h-4 w-4" /> กลับไปรายการกิจกรรม</Link>
 
             <div className="bg-card rounded-xl border border-border p-6 flex flex-wrap items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-400 flex items-center justify-center text-2xl">🎯</div>
+                <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center text-white"><Icon name="target" className="h-7 w-7" /></div>
                 <div className="flex-1 min-w-0">
                     <h1 className="text-xl font-bold truncate">{activity.title}</h1>
                     <p className="text-sm text-muted-foreground">สร้างโดย {creator?.name ?? "-"} · ผู้เข้าร่วม {joined}/{activity.capacity}</p>
                 </div>
-                <ConfirmButton onConfirm={remove} confirmLabel="กดอีกครั้งเพื่อยกเลิกกิจกรรม">🗑️ ยกเลิกกิจกรรม</ConfirmButton>
+                <ConfirmButton onConfirm={remove} confirmLabel="กดอีกครั้งเพื่อยกเลิกกิจกรรม"><span className="inline-flex items-center gap-1.5"><Icon name="trash" className="h-4 w-4" /> ยกเลิกกิจกรรม</span></ConfirmButton>
             </div>
 
             {msg && (
@@ -91,7 +92,7 @@ export function AdminActivityEditor({ activity, allInterests, allStudents }: Pro
             )}
 
             <form onSubmit={save} className="bg-card rounded-xl border border-border p-6 space-y-4">
-                <h2 className="text-lg font-semibold">📝 ข้อมูลกิจกรรม</h2>
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Icon name="edit" className="h-5 w-5" /> ข้อมูลกิจกรรม</h2>
                 <label className="block space-y-1">
                     <span className="text-sm font-medium">ชื่อกิจกรรม</span>
                     <input className={input} value={form.title} onChange={set("title")} minLength={2} maxLength={200} required />
@@ -116,7 +117,7 @@ export function AdminActivityEditor({ activity, allInterests, allStudents }: Pro
                     <label className="space-y-1">
                         <span className="text-sm font-medium">รับได้ (คน)</span>
                         <input type="number" className={input} value={form.capacity} onChange={set("capacity")} min={Math.max(2, joined)} max={1000} required />
-                        <span className="text-[11px] text-muted-foreground">ต้องไม่น้อยกว่าคนที่เข้าร่วมแล้ว ({joined} คน)</span>
+                        <span className="text-xs text-muted-foreground">ต้องไม่น้อยกว่าคนที่เข้าร่วมแล้ว ({joined} คน)</span>
                     </label>
                 </div>
                 <div className="space-y-1">
@@ -124,16 +125,16 @@ export function AdminActivityEditor({ activity, allInterests, allStudents }: Pro
                     <InterestMultiSelect allInterests={allInterests} value={interestIds} onChange={setInterestIds} />
                 </div>
                 {notifiesParticipants && (
-                    <p className="text-xs text-amber-700 bg-amber-50 rounded-lg p-2">🔔 เปลี่ยนวัน/เวลา/สถานที่ ระบบจะแจ้งเตือนผู้เข้าร่วมทุกคน</p>
+                    <p className="flex items-center gap-1.5 text-xs text-amber-700 bg-amber-50 rounded-lg p-2"><Icon name="bell" className="h-4 w-4 shrink-0" /> เปลี่ยนวัน/เวลา/สถานที่ ระบบจะแจ้งเตือนผู้เข้าร่วมทุกคน</p>
                 )}
                 <div className="flex justify-end">
                     <button type="submit" disabled={busy || !dirty}
-                        className="px-5 py-2 rounded-xl gradient-primary text-white text-sm font-medium disabled:opacity-40">บันทึก</button>
+                        className="px-5 py-2 rounded-xl gradient-primary text-white text-sm font-medium disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">บันทึก</button>
                 </div>
             </form>
 
             <div className="bg-card rounded-xl border border-border p-6 space-y-3">
-                <h2 className="text-lg font-semibold">👤 ผู้เข้าร่วม ({joined}/{activity.capacity})</h2>
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Icon name="user" className="h-5 w-5" /> ผู้เข้าร่วม ({joined}/{activity.capacity})</h2>
                 <div className="divide-y divide-border">
                     {activity.participants.map(({ studentId }) => {
                         const s = studentById(studentId);
@@ -143,12 +144,12 @@ export function AdminActivityEditor({ activity, allInterests, allStudents }: Pro
                                 <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-white text-xs font-semibold shrink-0">
                                     {getInitials(s?.name ?? "?")}
                                 </div>
-                                <Link href={`/admin/students/${studentId}`} className="flex-1 min-w-0 hover:text-primary">
+                                <Link href={`/admin/students/${studentId}`} className="flex-1 min-w-0 hover:text-primary rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                                     <p className="text-sm font-medium truncate">{s?.name ?? studentId}</p>
                                     <p className="text-xs text-muted-foreground">{s?.studentId}</p>
                                 </Link>
                                 {isCreator ? (
-                                    <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700">👑 ผู้สร้าง</span>
+                                    <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-primary/10 text-primary"><Icon name="star" className="h-3.5 w-3.5" /> ผู้สร้าง</span>
                                 ) : (
                                     <ConfirmButton onConfirm={() => kick(studentId)} confirmLabel="ยืนยันนำออก?">นำออก</ConfirmButton>
                                 )}

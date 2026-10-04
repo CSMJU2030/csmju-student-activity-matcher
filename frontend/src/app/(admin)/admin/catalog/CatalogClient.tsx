@@ -13,8 +13,10 @@ import {
 import { CategoryWithCount, LookingForWithCount } from "@/lib/data/interests";
 import { CATEGORY_COLORS } from "@/components/category-colors";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { Icon } from "@/components/Icon";
 
-const input = "px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50";
+const FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+const input = `px-3 py-2 rounded-lg border border-input bg-card text-sm ${FOCUS}`;
 
 type Result = { success: boolean; error?: string; removedFromStudents?: number };
 
@@ -43,8 +45,8 @@ export function CatalogClient({ categories, lookingFor }: { categories: Category
     return (
         <div className="max-w-5xl mx-auto space-y-6">
             <div>
-                <h1 className="text-2xl font-bold">🗂️ หมวดหมู่ & กำลังหา</h1>
-                <p className="text-muted-foreground mt-1">จัดการหมวดหมู่ของ Interest และตัวเลือก &quot;กำลังหา&quot; ที่นักศึกษาเลือกได้</p>
+                <h1 className="text-2xl font-bold flex items-center gap-2"><Icon name="folder" className="h-6 w-6" /> หมวดหมู่และตัวเลือก &quot;กำลังหา&quot;</h1>
+                <p className="text-muted-foreground mt-1">จัดการหมวดหมู่ของความสนใจและตัวเลือก &quot;กำลังหา&quot; ที่นักศึกษาเลือกได้</p>
             </div>
 
             {msg && (
@@ -53,12 +55,12 @@ export function CatalogClient({ categories, lookingFor }: { categories: Category
 
             {/* Categories */}
             <section className="bg-card rounded-xl border border-border p-6 space-y-4">
-                <h2 className="text-lg font-semibold">📂 หมวดหมู่ Interest ({categories.length})</h2>
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Icon name="folder" className="h-5 w-5" /> หมวดหมู่ความสนใจ ({categories.length})</h2>
                 <form
                     className="flex flex-wrap gap-2 items-center"
                     onSubmit={async (e) => {
                         e.preventDefault();
-                        if (await run(() => createCategory({ ...newCat, name: newCat.name.trim() }), () => `✅ เพิ่มหมวด "${newCat.name.trim()}" แล้ว`)) {
+                        if (await run(() => createCategory({ ...newCat, name: newCat.name.trim() }), () => `เพิ่มหมวด "${newCat.name.trim()}" แล้ว`)) {
                             setNewCat({ ...newCat, name: "" });
                         }
                     }}
@@ -68,7 +70,7 @@ export function CatalogClient({ categories, lookingFor }: { categories: Category
                     <select aria-label="สีหมวดใหม่" className={input} value={newCat.color} onChange={(e) => setNewCat({ ...newCat, color: e.target.value })}>
                         {CATEGORY_COLORS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
                     </select>
-                    <button type="submit" disabled={busy || newCat.name.trim().length < 2} className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-40">เพิ่มหมวด</button>
+                    <button type="submit" disabled={busy || newCat.name.trim().length < 2} className={`px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-40 ${FOCUS}`}>เพิ่มหมวด</button>
                 </form>
 
                 <div className="divide-y divide-border">
@@ -82,22 +84,22 @@ export function CatalogClient({ categories, lookingFor }: { categories: Category
                                         {CATEGORY_COLORS.map((col) => <option key={col.value} value={col.value}>{col.label}</option>)}
                                     </select>
                                     <button type="button" disabled={busy || editCat.name.trim().length < 2}
-                                        onClick={async () => { if (await run(() => updateCategory(c.id, { name: editCat.name.trim(), icon: editCat.icon, color: editCat.color }), () => "✅ แก้ไขหมวดแล้ว")) setEditCat(null); }}
-                                        className="px-3 py-1.5 rounded-lg bg-primary text-white text-sm disabled:opacity-40">บันทึก</button>
-                                    <button type="button" onClick={() => setEditCat(null)} className="px-3 py-1.5 rounded-lg border border-border text-sm">ยกเลิก</button>
+                                        onClick={async () => { if (await run(() => updateCategory(c.id, { name: editCat.name.trim(), icon: editCat.icon, color: editCat.color }), () => "แก้ไขหมวดแล้ว")) setEditCat(null); }}
+                                        className={`px-3 py-1.5 rounded-lg bg-primary text-white text-sm disabled:opacity-40 ${FOCUS}`}>บันทึก</button>
+                                    <button type="button" onClick={() => setEditCat(null)} className={`px-3 py-1.5 rounded-lg border border-border text-sm ${FOCUS}`}>ยกเลิก</button>
                                 </>
                             ) : (
                                 <>
                                     <span className={`px-3 py-1 rounded-full border text-sm font-medium ${c.color}`}>{c.icon} {c.name}</span>
-                                    <span className="flex-1 text-xs text-muted-foreground">{c.interestCount} interest</span>
+                                    <span className="flex-1 text-xs text-muted-foreground"><span className="tabular-nums">{c.interestCount}</span> ความสนใจ</span>
                                     <button type="button" onClick={() => setEditCat({ id: c.id, name: c.name, icon: c.icon, color: c.color })}
-                                        className="px-3 py-1.5 rounded-lg border border-border text-sm hover:bg-accent">แก้ไข</button>
+                                        className={`px-3 py-1.5 rounded-lg border border-border text-sm hover:bg-accent ${FOCUS}`}>แก้ไข</button>
                                     <ConfirmButton
                                         disabled={c.interestCount > 0}
-                                        onConfirm={() => run(() => deleteCategory(c.id), () => `✅ ลบหมวด "${c.name}" แล้ว`).then(() => undefined)}
+                                        onConfirm={() => run(() => deleteCategory(c.id), () => `ลบหมวด "${c.name}" แล้ว`).then(() => undefined)}
                                         confirmLabel="ยืนยันลบ?"
                                     >
-                                        {c.interestCount > 0 ? "ลบไม่ได้ (มี interest)" : "ลบ"}
+                                        {c.interestCount > 0 ? "ลบไม่ได้ (มีความสนใจอยู่ในหมวดนี้)" : "ลบ"}
                                     </ConfirmButton>
                                 </>
                             )}
@@ -108,19 +110,19 @@ export function CatalogClient({ categories, lookingFor }: { categories: Category
 
             {/* Looking-for options */}
             <section className="bg-card rounded-xl border border-border p-6 space-y-4">
-                <h2 className="text-lg font-semibold">🔎 ตัวเลือก &quot;กำลังหา&quot; ({lookingFor.length})</h2>
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Icon name="search" className="h-5 w-5" /> ตัวเลือก &quot;กำลังหา&quot; ({lookingFor.length})</h2>
                 <form
                     className="flex flex-wrap gap-2 items-center"
                     onSubmit={async (e) => {
                         e.preventDefault();
-                        if (await run(() => createLookingFor({ ...newLf, label: newLf.label.trim() }), () => `✅ เพิ่ม "${newLf.label.trim()}" แล้ว`)) {
+                        if (await run(() => createLookingFor({ ...newLf, label: newLf.label.trim() }), () => `เพิ่ม "${newLf.label.trim()}" แล้ว`)) {
                             setNewLf({ ...newLf, label: "" });
                         }
                     }}
                 >
                     <input aria-label="ไอคอนตัวเลือกใหม่" className={`${input} w-16`} value={newLf.icon} maxLength={16} onChange={(e) => setNewLf({ ...newLf, icon: e.target.value })} />
                     <input aria-label="ข้อความตัวเลือกใหม่" className={`${input} flex-1 min-w-40`} placeholder="เช่น หาเพื่อนติวสอบ" value={newLf.label} maxLength={60} onChange={(e) => setNewLf({ ...newLf, label: e.target.value })} />
-                    <button type="submit" disabled={busy || newLf.label.trim().length < 2} className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-40">เพิ่มตัวเลือก</button>
+                    <button type="submit" disabled={busy || newLf.label.trim().length < 2} className={`px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-40 ${FOCUS}`}>เพิ่มตัวเลือก</button>
                 </form>
 
                 <div className="divide-y divide-border">
@@ -131,18 +133,18 @@ export function CatalogClient({ categories, lookingFor }: { categories: Category
                                     <input aria-label="ไอคอน" className={`${input} w-16`} value={editLf.icon} maxLength={16} onChange={(e) => setEditLf({ ...editLf, icon: e.target.value })} />
                                     <input aria-label="ข้อความ" className={`${input} flex-1 min-w-40`} value={editLf.label} maxLength={60} onChange={(e) => setEditLf({ ...editLf, label: e.target.value })} />
                                     <button type="button" disabled={busy || editLf.label.trim().length < 2}
-                                        onClick={async () => { if (await run(() => updateLookingFor(o.id, { label: editLf.label.trim(), icon: editLf.icon }), () => "✅ แก้ไขแล้ว")) setEditLf(null); }}
-                                        className="px-3 py-1.5 rounded-lg bg-primary text-white text-sm disabled:opacity-40">บันทึก</button>
-                                    <button type="button" onClick={() => setEditLf(null)} className="px-3 py-1.5 rounded-lg border border-border text-sm">ยกเลิก</button>
+                                        onClick={async () => { if (await run(() => updateLookingFor(o.id, { label: editLf.label.trim(), icon: editLf.icon }), () => "แก้ไขแล้ว")) setEditLf(null); }}
+                                        className={`px-3 py-1.5 rounded-lg bg-primary text-white text-sm disabled:opacity-40 ${FOCUS}`}>บันทึก</button>
+                                    <button type="button" onClick={() => setEditLf(null)} className={`px-3 py-1.5 rounded-lg border border-border text-sm ${FOCUS}`}>ยกเลิก</button>
                                 </>
                             ) : (
                                 <>
                                     <span className="px-3 py-1 rounded-full bg-accent text-sm">{o.icon} {o.label}</span>
-                                    <span className="flex-1 text-xs text-muted-foreground">นักศึกษาเลือก {o.studentCount} คน</span>
+                                    <span className="flex-1 text-xs text-muted-foreground">นักศึกษาเลือก <span className="tabular-nums">{o.studentCount}</span> คน</span>
                                     <button type="button" onClick={() => setEditLf({ id: o.id, label: o.label, icon: o.icon })}
-                                        className="px-3 py-1.5 rounded-lg border border-border text-sm hover:bg-accent">แก้ไข</button>
+                                        className={`px-3 py-1.5 rounded-lg border border-border text-sm hover:bg-accent ${FOCUS}`}>แก้ไข</button>
                                     <ConfirmButton
-                                        onConfirm={() => run(() => deleteLookingFor(o.id), (r) => `✅ ลบแล้ว (เอาออกจากนักศึกษา ${r.removedFromStudents ?? 0} คน)`).then(() => undefined)}
+                                        onConfirm={() => run(() => deleteLookingFor(o.id), (r) => `ลบแล้ว (เอาออกจากนักศึกษา ${r.removedFromStudents ?? 0} คน)`).then(() => undefined)}
                                         confirmLabel={o.studentCount ? `ลบ? มีคนเลือก ${o.studentCount}` : "ยืนยันลบ?"}
                                     >
                                         ลบ

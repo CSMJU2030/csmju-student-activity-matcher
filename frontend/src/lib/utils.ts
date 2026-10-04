@@ -1,17 +1,20 @@
-export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
+/** Display format: `11 ส.ค. 2569` (Buddhist year, Asia/Bangkok) — ui-design-system.md 11.3. */
+export function formatDate(dateString: string, style: "short" | "long" = "short"): string {
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return dateString;
+  return date.toLocaleDateString("th-TH", {
     year: "numeric",
-    month: "long",
+    month: style === "long" ? "long" : "short",
     day: "numeric",
+    timeZone: "Asia/Bangkok",
   });
 }
 
+/** `HH:mm` -> `09:30 น.` */
 export function formatTime(timeString: string): string {
   const [hours, minutes] = timeString.split(":");
-  const h = parseInt(hours);
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 || 12;
-  return `${h12}:${minutes} ${ampm}`;
+  if (!hours || !minutes) return timeString;
+  return `${hours.padStart(2, "0")}:${minutes} น.`;
 }
 
 export function getInitials(name: string): string {

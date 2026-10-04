@@ -8,6 +8,7 @@ import { InterestWithCategory } from "@/lib/data/interests";
 import { joinGroup, leaveGroup, deleteGroup } from "@/lib/actions";
 import { getInitials, formatDate } from "@/lib/utils";
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { useRouter } from "next/navigation";
 
@@ -26,9 +27,9 @@ export function GroupDetailClient({ group, allStudents, allInterests }: GroupCli
     if (!group) {
         return (
             <div className="text-center py-20">
-                <span className="text-4xl">😔</span>
-                <p className="text-muted-foreground mt-3">ไม่พบ Group</p>
-                <Link href="/groups" className="mt-3 inline-block text-sm text-primary hover:underline">กลับ →</Link>
+                <Icon name="info" className="h-10 w-10 mx-auto text-muted-foreground" />
+                <p className="text-muted-foreground mt-3">ไม่พบกลุ่มนี้ อาจถูกลบไปแล้ว</p>
+                <Link href="/groups" className="mt-3 inline-block text-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">กลับไปหน้ากลุ่ม</Link>
             </div>
         );
     }
@@ -55,14 +56,14 @@ export function GroupDetailClient({ group, allStudents, allInterests }: GroupCli
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
-            <Link href="/groups" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary">
-                ← กลับไปหน้า Groups
+            <Link href="/groups" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                <Icon name="arrow-left" className="h-4 w-4" /> กลับไปหน้ากลุ่ม
             </Link>
 
             {/* Header */}
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-400 to-purple-400 h-36 flex items-center justify-center">
-                    <span className="text-5xl">👥</span>
+                <div className="brand-gradient h-36 flex items-center justify-center">
+                    <Icon name="users" className="h-12 w-12 text-white" />
                 </div>
                 <div className="p-6">
                     <div className="flex items-start justify-between flex-wrap gap-4">
@@ -70,15 +71,15 @@ export function GroupDetailClient({ group, allStudents, allInterests }: GroupCli
                             <h1 className="text-2xl font-bold">{group.name}</h1>
                             <p className="text-sm text-muted-foreground mt-1">{group.description}</p>
                             <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                                <span>👤 {group.members.length} members</span>
-                                <span>📅 Created {formatDate(group.createdAt)}</span>
+                                <span className="inline-flex items-center gap-1 tabular-nums"><Icon name="user" className="h-4 w-4" /> {group.members.length} สมาชิก</span>
+                                <span className="inline-flex items-center gap-1"><Icon name="calendar" className="h-4 w-4" /> สร้างเมื่อ {formatDate(group.createdAt)}</span>
                             </div>
                         </div>
                         {!isCreator && (
                             <button
                                 onClick={handleJoinLeave}
                                 disabled={isPending}
-                                className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-colors ${isMember
+                                className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${isMember
                                     ? "bg-muted hover:bg-destructive/10 hover:text-destructive"
                                     : "gradient-primary text-white hover:opacity-90 shadow-md shadow-primary/20"
                                     } ${isPending ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -88,8 +89,8 @@ export function GroupDetailClient({ group, allStudents, allInterests }: GroupCli
                         )}
                         {isCreator && (
                             <div className="flex flex-col items-end gap-2">
-                                <span className="text-xs px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">👑 คุณเป็นผู้สร้าง</span>
-                                <ConfirmButton onConfirm={handleDelete} confirmLabel="กดอีกครั้งเพื่อลบกลุ่ม">🗑️ ลบกลุ่ม</ConfirmButton>
+                                <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary"><Icon name="star" className="h-3.5 w-3.5" /> คุณเป็นผู้สร้าง</span>
+                                <ConfirmButton onConfirm={handleDelete} confirmLabel="กดอีกครั้งเพื่อลบกลุ่ม"><span className="inline-flex items-center gap-1"><Icon name="trash" className="h-4 w-4" /> ลบกลุ่ม</span></ConfirmButton>
                             </div>
                         )}
                     </div>
@@ -98,7 +99,7 @@ export function GroupDetailClient({ group, allStudents, allInterests }: GroupCli
 
             {/* Interests */}
             <div className="bg-card rounded-xl border border-border p-6">
-                <h2 className="text-lg font-semibold mb-3">Related Interests</h2>
+                <h2 className="text-lg font-semibold mb-3">ความสนใจที่เกี่ยวข้อง</h2>
                 <div className="flex flex-wrap gap-2">
                     {interests.map((i) => (
                         <span key={i.id} className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm">
@@ -110,7 +111,7 @@ export function GroupDetailClient({ group, allStudents, allInterests }: GroupCli
 
             {/* Members */}
             <div className="bg-card rounded-xl border border-border p-6">
-                <h2 className="text-lg font-semibold mb-4">Members ({group.members.length})</h2>
+                <h2 className="text-lg font-semibold mb-4">สมาชิก <span className="tabular-nums">({group.members.length})</span></h2>
                 <div className="grid sm:grid-cols-2 gap-3">
                     {group.members.map((memberWrap) => {
                         const member = allStudents.find(s => s.id === memberWrap.studentId);
@@ -119,19 +120,19 @@ export function GroupDetailClient({ group, allStudents, allInterests }: GroupCli
                             <Link
                                 key={member.id}
                                 href={`/profile/${member.id}`}
-                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent transition-colors"
+                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             >
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+                                <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-white text-sm font-semibold shrink-0">
                                     {getInitials(member.name)}
                                 </div>
                                 <div className="min-w-0">
                                     <p className="text-sm font-medium truncate">
                                         {member.name}
                                         {member.id === group.creatorId && (
-                                            <span className="ml-1.5 text-xs text-primary">👑 Creator</span>
+                                            <span className="ml-1.5 inline-flex items-center gap-0.5 text-xs text-primary"><Icon name="star" className="h-3 w-3" /> ผู้สร้าง</span>
                                         )}
                                     </p>
-                                    <p className="text-xs text-muted-foreground truncate">Year {member.year}</p>
+                                    <p className="text-xs text-muted-foreground truncate">ชั้นปีที่ {member.year}</p>
                                 </div>
                             </Link>
                         );

@@ -45,7 +45,7 @@ export function ConfirmButton({
             type="button"
             onClick={click}
             disabled={disabled || busy}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${armed ? "bg-destructive text-white" : "text-destructive hover:bg-destructive/10"} ${className}`}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${armed ? "bg-destructive text-white" : "text-destructive hover:bg-destructive/10"} ${className}`}
         >
             {busy ? "กำลังทำ..." : armed ? confirmLabel : children}
         </button>

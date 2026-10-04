@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { Icon, type IconName } from "@/components/Icon";
 
 /** Dev-only shortcut accounts (the Core Hub seed). Hidden in production builds. */
-const MOCK_ACCOUNTS = [
-    { email: "student@core.local", label: "Student Account", icon: "🎓" },
-    { email: "admin@core.local", label: "Admin Account", icon: "🛡️" },
+const MOCK_ACCOUNTS: { email: string; label: string; icon: IconName }[] = [
+    { email: "student@core.local", label: "บัญชีนักศึกษา", icon: "graduation" },
+    { email: "admin@core.local", label: "บัญชีผู้ดูแลระบบ", icon: "shield" },
 ];
 const SHOW_MOCK = process.env.NODE_ENV !== "production";
 
@@ -43,13 +44,13 @@ export default function LoginPage() {
             });
             if (!res.ok) {
                 const data = await res.json().catch(() => null);
-                throw new Error(data?.error?.message || "Mock login failed");
+                throw new Error(data?.error?.message || "เข้าสู่ระบบไม่สำเร็จ");
             }
             const signedIn = await refresh();
             if (!signedIn) throw new Error("เข้าสู่ระบบไม่สำเร็จ");
             router.push(signedIn.role === "admin" ? "/admin/dashboard" : "/dashboard");
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Mock login failed");
+            setError(err instanceof Error ? err.message : "เข้าสู่ระบบไม่สำเร็จ");
             setBusy(null);
         }
     };
@@ -57,37 +58,37 @@ export default function LoginPage() {
     const shownError = error || sessionError;
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-pink-50 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <div className="w-full max-w-md">
                 {/* Logo & Title */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary shadow-lg shadow-primary/20 mb-4">
-                        <span className="text-3xl">🤝</span>
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-primary shadow-md mb-4">
+                        <Icon name="users" className="h-8 w-8 text-white" />
                     </div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    <h1 className="text-3xl font-bold text-gradient">
                         Interest Match
                     </h1>
                     <p className="text-muted-foreground mt-2">ค้นหาเพื่อนที่มีความสนใจเหมือนกัน</p>
                 </div>
 
-                <div className="bg-card rounded-2xl shadow-xl shadow-primary/20 border border-primary/20 p-8 space-y-5">
+                <div className="bg-card rounded-2xl shadow-md border border-primary/20 p-8 space-y-5">
                     <button
                         type="button"
                         onClick={signInWithCoreHub}
                         disabled={busy !== null}
-                        className="w-full py-3 px-4 rounded-xl gradient-primary text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-primary/20"
+                        className="w-full py-3 px-4 rounded-xl gradient-primary text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                         {busy === "sso" ? "กำลังไปที่ Core Hub..." : "เข้าสู่ระบบผ่าน Core Hub (SSO)"}
                     </button>
-                    <p className="text-xs text-muted-foreground text-center">ใช้บัญชีเดียวกับ CSMJU Core Hub — ระบบนี้ไม่มีรหัสผ่านของตัวเอง</p>
+                    <p className="text-sm text-muted-foreground text-center">ใช้บัญชีเดียวกับ CSMJU Core Hub — ระบบนี้ไม่มีรหัสผ่านของตัวเอง</p>
 
                     {shownError && (
-                        <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{shownError}</div>
+                        <div role="alert" className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{shownError}</div>
                     )}
 
                     {SHOW_MOCK && (
                         <div className="pt-5 border-t border-border">
-                            <p className="text-xs text-muted-foreground text-center mb-3">โหมดพัฒนา: เข้าด้วยบัญชีทดสอบของ Core Hub</p>
+                            <p className="text-sm text-muted-foreground text-center mb-3">โหมดพัฒนา: เข้าด้วยบัญชีทดสอบของ Core Hub</p>
                             <div className="space-y-2">
                                 {MOCK_ACCOUNTS.map((account) => (
                                     <button
@@ -95,9 +96,9 @@ export default function LoginPage() {
                                         type="button"
                                         onClick={() => mockLogin(account.email)}
                                         disabled={busy !== null}
-                                        className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent transition-colors text-left disabled:opacity-50"
+                                        className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent transition-colors text-left disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                     >
-                                        <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-sm">{account.icon}</span>
+                                        <span className="w-8 h-8 rounded-lg bg-secondary text-secondary-foreground flex items-center justify-center"><Icon name={account.icon} className="h-4 w-4" /></span>
                                         <div>
                                             <p className="text-sm font-medium">{busy === account.email ? "กำลังเข้าสู่ระบบ..." : account.label}</p>
                                             <p className="text-xs text-muted-foreground">{account.email}</p>

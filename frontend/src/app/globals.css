@@ -1,30 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Palette = ui-design-system.md 3.1 (Modern Institutionalism), written as the
+ * HSL variables the Tailwind theme reads. The same colours are available by
+ * their standard names (primary-container, surface-*, on-surface, ...) in
+ * tailwind.config.ts.
+ *   --primary     #2154D9 primary-container   --muted-foreground #434654 on-surface-variant
+ *   --background  #F8F9FA background          --foreground       #191C1D on-surface
+ *   --border      #E1E3E4 surface-variant     --input            #C4C5D7 outline-variant
+ *   --ring        #3B80F2 accent              --destructive      #BA1A1A error
+ */
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 215 25% 27%;
-    --card: 210 40% 98%;
-    --card-foreground: 215 25% 27%;
-    --popover: 210 40% 98%;
-    --popover-foreground: 215 25% 27%;
-    --primary: 210 100% 30%;
+    --background: 210 17% 98%;
+    --foreground: 195 7% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 195 7% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 195 7% 11%;
+    --primary: 223 74% 49%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 211 100% 95%;
-    --secondary-foreground: 210 100% 30%;
-    --muted: 211 100% 95%;
-    --muted-foreground: 215 25% 45%;
-    --accent: 211 100% 95%;
-    --accent-foreground: 210 100% 30%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 214 25% 85%;
-    --input: 214 25% 85%;
-    --ring: 210 100% 30%;
+    --secondary: 223 69% 95%;
+    --secondary-foreground: 223 74% 49%;
+    --muted: 210 6% 93%;
+    --muted-foreground: 229 11% 30%;
+    --accent: 223 69% 95%;
+    --accent-foreground: 223 74% 49%;
+    --destructive: 0 75% 42%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 200 5% 89%;
+    --input: 237 19% 81%;
+    --ring: 217 88% 59%;
     --radius: 0.75rem;
   }
 }
@@ -69,19 +77,27 @@
   @apply shadow-lg -translate-y-0.5;
 }
 
-/* Gradient backgrounds */
-.gradient-primary {
-  background: linear-gradient(135deg, hsl(210, 100%, 35%) 0%, hsl(210, 100%, 25%) 100%);
+/*
+ * The only two gradients the standard allows (ui-design-system.md 2.1, 3.1):
+ *   brand-gradient  navy -> blue, 135deg  (sidebar, hero banner)
+ *   btn-gradient    blue -> light blue, 90deg  (primary actions, avatars, icon tiles)
+ * `gradient-primary` is the btn-gradient look under the name the pages already use.
+ */
+.brand-gradient {
+  background: linear-gradient(135deg, #16264d 0%, #0d4fa8 100%);
   color: white;
 }
-.gradient-warm {
-  background: linear-gradient(135deg, hsl(210, 50%, 95%) 0%, hsl(211, 100%, 90%) 100%);
+.btn-gradient,
+.gradient-primary {
+  background: linear-gradient(90deg, #2154d9 0%, #3b80f2 100%);
+  color: white;
 }
-.gradient-cool {
-  background: linear-gradient(135deg, hsl(210, 100%, 40%) 0%, hsl(210, 100%, 30%) 100%);
-}
-.gradient-subtle {
-  background: linear-gradient(135deg, hsl(211, 100%, 98%) 0%, hsl(211, 100%, 92%) 100%);
+.text-gradient {
+  background: linear-gradient(90deg, #2154d9 0%, #3b80f2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 /* Enter animations (the subset of tailwindcss-animate the pages use) */

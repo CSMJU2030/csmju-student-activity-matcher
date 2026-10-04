@@ -16,6 +16,7 @@ import { formatDate, getInitials } from "@/lib/utils";
 import { InterestPicker } from "@/components/InterestPicker";
 import { GroupData } from "@/lib/data/groups";
 import { ActivityData } from "@/lib/data/activities";
+import { Icon } from "@/components/Icon";
 
 
 interface Props {
@@ -29,7 +30,7 @@ interface Props {
 
 const SOURCE_LABEL: Record<string, string> = {
     REG: "ข้อมูลจาก REG",
-    ADMIN: "แก้ไขโดยแอดมิน (Sync REG จะไม่เขียนทับ)",
+    ADMIN: "แก้ไขโดยแอดมิน (การซิงก์ข้อมูล REG จะไม่เขียนทับ)",
     SEED: "ข้อมูลตัวอย่าง",
 };
 
@@ -71,7 +72,7 @@ export function AdminStudentEditor({ student, allInterests, categories, lookingF
         });
         setBusy(false);
         if (res.success) {
-            flash(true, "✅ บันทึกข้อมูลแล้ว");
+            flash(true, "บันทึกข้อมูลแล้ว");
             router.refresh();
         } else {
             flash(false, res.error || "บันทึกไม่สำเร็จ");
@@ -105,7 +106,7 @@ export function AdminStudentEditor({ student, allInterests, categories, lookingF
         const res = await createCustomInterest(student.id, name, categoryId);
         if (res.success && res.interestId) {
             setInterestIds((prev) => (prev.includes(res.interestId!) ? prev : [...prev, res.interestId!]));
-            flash(true, `✅ เพิ่ม "${name}" แล้ว`);
+            flash(true, `เพิ่ม "${name}" แล้ว`);
             router.refresh();
         } else {
             flash(false, res.error || "เพิ่มไม่สำเร็จ");
@@ -130,11 +131,12 @@ export function AdminStudentEditor({ student, allInterests, categories, lookingF
         .map((id) => allInterests.find((i) => i.id === id))
         .filter((i): i is InterestWithCategory => !!i);
 
-    const input = "w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50";
+    const F = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+    const input = `w-full px-3 py-2 rounded-lg border border-input bg-card text-sm ${F}`;
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
-            <Link href="/admin/students" className="text-sm text-muted-foreground hover:text-primary">← กลับไปรายชื่อนักศึกษา</Link>
+            <Link href="/admin/students" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><Icon name="arrow-left" className="h-4 w-4" /> กลับไปรายชื่อนักศึกษา</Link>
 
             <div className="bg-card rounded-xl border border-border p-6 flex items-center gap-4">
                 <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center text-white text-lg font-bold shrink-0">
@@ -157,7 +159,7 @@ export function AdminStudentEditor({ student, allInterests, categories, lookingF
 
             {/* Basic info */}
             <form onSubmit={save} className="bg-card rounded-xl border border-border p-6 space-y-4">
-                <h2 className="text-lg font-semibold">📝 ข้อมูลพื้นฐาน</h2>
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Icon name="edit" className="h-5 w-5" /> ข้อมูลพื้นฐาน</h2>
                 <div className="grid sm:grid-cols-2 gap-4">
                     <label className="space-y-1 sm:col-span-2">
                         <span className="text-sm font-medium">ชื่อ-นามสกุล</span>
@@ -185,7 +187,7 @@ export function AdminStudentEditor({ student, allInterests, categories, lookingF
                         <input className={`${input} opacity-60`} value={student.studentId} disabled />
                     </label>
                     <label className="space-y-1 sm:col-span-2">
-                        <span className="text-sm font-medium">Bio</span>
+                        <span className="text-sm font-medium">ประวัติโดยย่อ (Bio)</span>
                         <textarea className={input} rows={3} maxLength={500} value={form.bio}
                             onChange={(e) => setForm({ ...form, bio: e.target.value })} />
                         <span className="text-xs text-muted-foreground">{form.bio.length}/500</span>
@@ -193,7 +195,7 @@ export function AdminStudentEditor({ student, allInterests, categories, lookingF
                 </div>
                 <div className="flex justify-end">
                     <button type="submit" disabled={busy || !dirty}
-                        className="px-5 py-2 rounded-xl gradient-primary text-white text-sm font-medium disabled:opacity-40">
+                        className="px-5 py-2 rounded-xl gradient-primary text-white text-sm font-medium disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                         บันทึกข้อมูล
                     </button>
                 </div>
@@ -201,14 +203,14 @@ export function AdminStudentEditor({ student, allInterests, categories, lookingF
 
             {/* Interests */}
             <div className="bg-card rounded-xl border border-border p-6 space-y-4">
-                <h2 className="text-lg font-semibold">✨ ความสนใจ ({selected.length})</h2>
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Icon name="sparkles" className="h-5 w-5" /> ความสนใจ ({selected.length})</h2>
                 <div className="flex flex-wrap gap-2">
                     {selected.length === 0 && <p className="text-sm text-muted-foreground italic">ยังไม่มีความสนใจ</p>}
                     {selected.map((i) => (
                         <span key={i.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
                             {i.icon} {i.name}
                             <button type="button" onClick={() => removeInterest(i.id)} disabled={busy}
-                                className="ml-1 hover:text-destructive" aria-label={`ลบ ${i.name}`}>×</button>
+                                className={`-my-2 -mr-2 ml-0 inline-flex h-10 w-10 items-center justify-center rounded-full hover:text-destructive ${F}`} aria-label={`ลบ ${i.name}`}><Icon name="x" className="h-4 w-4" /></button>
                         </span>
                     ))}
                 </div>
@@ -227,20 +229,20 @@ export function AdminStudentEditor({ student, allInterests, categories, lookingF
             {/* Groups & activities this student is in (managed from their own admin pages) */}
             <div className="grid sm:grid-cols-2 gap-6">
                 <div className="bg-card rounded-xl border border-border p-6 space-y-3">
-                    <h2 className="text-lg font-semibold">👥 กลุ่ม ({groups.length})</h2>
+                    <h2 className="text-lg font-semibold flex items-center gap-2"><Icon name="users" className="h-5 w-5" /> กลุ่ม ({groups.length})</h2>
                     {groups.length === 0 && <p className="text-sm text-muted-foreground italic">ยังไม่ได้เข้ากลุ่มไหน</p>}
                     {groups.map((g) => (
-                        <Link key={g.id} href={`/admin/groups/${g.id}`} className="flex items-center justify-between text-sm hover:text-primary">
+                        <Link key={g.id} href={`/admin/groups/${g.id}`} className="flex items-center justify-between text-sm hover:text-primary rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                             <span className="truncate">{g.name}</span>
-                            {g.creatorId === student.id && <span className="text-xs text-amber-700">👑 ผู้สร้าง</span>}
+                            {g.creatorId === student.id && <span className="inline-flex items-center gap-1 text-xs text-primary"><Icon name="star" className="h-3.5 w-3.5" /> ผู้สร้าง</span>}
                         </Link>
                     ))}
                 </div>
                 <div className="bg-card rounded-xl border border-border p-6 space-y-3">
-                    <h2 className="text-lg font-semibold">🎯 กิจกรรม ({activities.length})</h2>
+                    <h2 className="text-lg font-semibold flex items-center gap-2"><Icon name="target" className="h-5 w-5" /> กิจกรรม ({activities.length})</h2>
                     {activities.length === 0 && <p className="text-sm text-muted-foreground italic">ยังไม่ได้เข้าร่วมกิจกรรม</p>}
                     {activities.map((a) => (
-                        <Link key={a.id} href={`/admin/activities/${a.id}`} className="flex items-center justify-between gap-2 text-sm hover:text-primary">
+                        <Link key={a.id} href={`/admin/activities/${a.id}`} className="flex items-center justify-between gap-2 text-sm hover:text-primary rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                             <span className="truncate">{a.title}</span>
                             <span className="text-xs text-muted-foreground shrink-0">{formatDate(a.date)}</span>
                         </Link>
@@ -250,13 +252,13 @@ export function AdminStudentEditor({ student, allInterests, categories, lookingF
 
             {/* Looking for */}
             <div className="bg-card rounded-xl border border-border p-6 space-y-3">
-                <h2 className="text-lg font-semibold">🔎 กำลังมองหา</h2>
+                <h2 className="text-lg font-semibold flex items-center gap-2"><Icon name="search" className="h-5 w-5" /> กำลังมองหา</h2>
                 <div className="flex flex-wrap gap-2">
                     {lookingForOptions.map((lf) => {
                         const on = lookingForIds.includes(lf.id);
                         return (
                             <button type="button" key={lf.id} onClick={() => toggleLf(lf.id)} disabled={busy}
-                                className={`px-3 py-1.5 rounded-full text-sm transition ${on ? "bg-primary text-white" : "bg-accent hover:bg-primary/10"}`}>
+                                className={`px-3 py-1.5 rounded-full text-sm transition ${on ? "bg-primary text-white" : "bg-accent hover:bg-primary/10"} ${F}`}>
                                 {lf.icon} {lf.label}
                             </button>
                         );

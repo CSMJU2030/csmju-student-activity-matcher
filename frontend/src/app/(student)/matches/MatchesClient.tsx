@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 import { ChatButton } from "@/components/ChatButton";
 import { InterestWithCategory } from "@/lib/data/interests";
 import { StudentData } from "@/lib/data/students";
@@ -52,8 +53,8 @@ export function MatchesClient({ allStudents, allInterests }: MatchesClientProps)
     if (!currentStudent) {
         return (
             <div className="text-center py-20 text-muted-foreground">
-                <p className="text-4xl mb-4">🔒</p>
-                <p className="text-lg font-semibold">กรุณา Login ก่อน</p>
+                <span className="flex justify-center mb-4"><Icon name="lock" className="h-10 w-10" /></span>
+                <p className="text-lg font-semibold">กรุณาเข้าสู่ระบบก่อน</p>
             </div>
         );
     }
@@ -61,11 +62,11 @@ export function MatchesClient({ allStudents, allInterests }: MatchesClientProps)
     if (currentStudent.interestIds.length === 0) {
         return (
             <div className="text-center py-20 text-muted-foreground">
-                <p className="text-4xl mb-4">✨</p>
-                <p className="text-lg font-semibold">ยังไม่มี Interest</p>
-                <p className="text-sm mt-1">กรุณาเพิ่ม Interest ใน Profile ก่อน</p>
-                <Link href="/profile" className="mt-4 inline-block px-6 py-2 bg-primary text-white rounded-xl font-medium">
-                    ไปที่ Profile
+                <span className="flex justify-center mb-4"><Icon name="sparkles" className="h-10 w-10" /></span>
+                <p className="text-lg font-semibold">ยังไม่มีความสนใจ</p>
+                <p className="text-sm mt-1">เพิ่มความสนใจในโปรไฟล์ก่อน แล้วระบบจะจับคู่เพื่อนให้คุณ</p>
+                <Link href="/profile" className="mt-4 inline-block px-6 py-2 bg-primary text-white rounded-xl font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                    ไปที่โปรไฟล์
                 </Link>
             </div>
         );
@@ -74,34 +75,35 @@ export function MatchesClient({ allStudents, allInterests }: MatchesClientProps)
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             <div>
-                <h1 className="text-2xl font-bold">❤️ Matches</h1>
+                <h1 className="text-2xl font-bold flex items-center gap-2"><Icon name="heart" className="h-6 w-6 text-primary" /> เพื่อนที่เข้ากัน</h1>
                 <p className="text-muted-foreground mt-1">
-                    เจอคนที่มีความสนใจเหมือนกัน {matches.length} คน
+                    เจอคนที่มีความสนใจเหมือนกัน <span className="tabular-nums">{matches.length}</span> คน
                 </p>
             </div>
 
             {matches.length === 0 ? (
                 <div className="text-center py-16 text-muted-foreground">
-                    <p className="text-4xl mb-4">😔</p>
-                    <p className="text-lg font-semibold">ยังไม่พบ Match</p>
+                    <span className="flex justify-center mb-4"><Icon name="users" className="h-10 w-10" /></span>
+                    <p className="text-lg font-semibold">ยังไม่พบเพื่อนที่เข้ากัน</p>
+                    <p className="text-sm mt-1">ลองเพิ่มความสนใจในโปรไฟล์ให้หลากหลายขึ้น</p>
                 </div>
             ) : (
                 <div className="space-y-4">
                     {matches.map(({ student, commonInterests, matchPercentage }) => (
                         <div
                             key={student.id}
-                            className="bg-card rounded-xl border border-border p-5 card-hover flex items-center gap-5"
+                            className="bg-card rounded-xl border border-border p-5 transition-shadow hover:shadow-md flex items-center gap-5"
                         >
-                            <Link href={`/students/${student.id}`} className="relative">
-                                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-lg shrink-0">
+                            <Link href={`/students/${student.id}`} className="relative rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                                <div className="w-14 h-14 rounded-full gradient-primary flex items-center justify-center text-white font-semibold text-lg shrink-0">
                                     {getInitials(student.name)}
                                 </div>
-                                <div className="absolute -top-1 -right-1 text-xs font-bold bg-primary text-white rounded-full w-7 h-7 flex items-center justify-center shadow">
+                                <div className="absolute -top-1 -right-1 text-xs font-bold bg-primary text-white rounded-full min-w-7 h-7 px-1 tabular-nums flex items-center justify-center shadow">
                                     {matchPercentage}%
                                 </div>
                             </Link>
                             <div className="flex-1 min-w-0">
-                                <Link href={`/students/${student.id}`} className="font-semibold hover:text-primary">{student.name}</Link>
+                                <Link href={`/students/${student.id}`} className="font-semibold hover:text-primary rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">{student.name}</Link>
                                 <p className="text-xs text-muted-foreground">{student.faculty} · {student.program}</p>
                                 <div className="flex flex-wrap gap-1.5 mt-2">
                                     {commonInterests.slice(0, 5).map((interest) => (
@@ -120,7 +122,7 @@ export function MatchesClient({ allStudents, allInterests }: MatchesClientProps)
                                 </div>
                             </div>
                             <div className="flex flex-col items-end gap-2 shrink-0">
-                                <span className="hidden sm:inline text-xs text-muted-foreground">❤️ {commonInterests.length} ร่วม</span>
+                                <span className="hidden sm:inline-flex items-center gap-1 text-xs text-muted-foreground tabular-nums"><Icon name="heart" className="h-4 w-4" /> สนใจร่วมกัน {commonInterests.length}</span>
                                 <ChatButton studentId={student.id} />
                             </div>
                         </div>

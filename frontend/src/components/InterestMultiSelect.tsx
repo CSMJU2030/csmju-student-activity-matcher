@@ -26,22 +26,22 @@ export function InterestMultiSelect({
                 {selected.length === 0 && <span className="text-xs text-muted-foreground italic">ยังไม่ได้เลือก</span>}
                 {selected.map((i) => (
                     <button type="button" key={i.id} onClick={() => onChange(value.filter((x) => x !== i.id))}
-                        className="px-3 py-1 rounded-full text-xs bg-primary text-white hover:opacity-80">
+                        className="px-3 py-1 rounded-full text-xs bg-primary text-white hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                         {i.icon} {i.name} ×
                     </button>
                 ))}
             </div>
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="ค้นหา interest เพื่อเพิ่ม..."
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
             <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
                 {options.slice(0, 60).map((i) => (
                     <button type="button" key={i.id} disabled={value.length >= max} onClick={() => onChange([...value, i.id])}
-                        className="px-2.5 py-1 rounded-full text-xs bg-accent hover:bg-primary/10 disabled:opacity-40">
+                        className="px-2.5 py-1 rounded-full text-xs bg-accent hover:bg-primary/10 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                         {i.icon} {i.name}
                     </button>
                 ))}
             </div>
-            <p className="text-[11px] text-muted-foreground">เลือกได้สูงสุด {max} อย่าง ({value.length}/{max})</p>
+            <p className="text-xs text-muted-foreground tabular-nums">เลือกได้สูงสุด {max} อย่าง ({value.length}/{max})</p>
         </div>
     );
 }

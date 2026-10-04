@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Icon } from "@/components/Icon";
 import { openConversation } from "@/lib/api/social";
 
-/** "💬 ทักแชท" - opens (or creates) the 1:1 chat with a student. */
-export function ChatButton({ studentId, className = "", label = "💬 ทักแชท" }: { studentId: string; className?: string; label?: string }) {
+/** "ทักแชท" - opens (or creates) the 1:1 chat with a student. */
+export function ChatButton({ studentId, className = "", label = "ทักแชท" }: { studentId: string; className?: string; label?: string }) {
     const router = useRouter();
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
@@ -30,8 +31,9 @@ export function ChatButton({ studentId, className = "", label = "💬 ทัก�
                 type="button"
                 onClick={open}
                 disabled={busy}
-                className={`px-4 py-2 rounded-xl gradient-primary text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 shadow-sm ${className}`}
+                className={`px-4 py-2 rounded-xl gradient-primary text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 shadow-sm inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${className}`}
             >
+                <Icon name="chat" className="h-4 w-4" />
                 {busy ? "กำลังเปิด..." : label}
             </button>
             {error && <span className="text-xs text-destructive mt-1">{error}</span>}

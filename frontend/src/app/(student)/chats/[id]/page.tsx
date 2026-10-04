@@ -4,6 +4,7 @@ import { use, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChatMessage, StudentCard, getMessages, sendMessage } from "@/lib/api/social";
 import { useAuth } from "@/lib/auth-context";
+import { Icon } from "@/components/Icon";
 import { getInitials } from "@/lib/utils";
 
 // Basic chat: new messages are fetched every few seconds (no websocket).
@@ -75,9 +76,9 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
     if (notFound) {
         return (
             <div className="text-center py-20">
-                <span className="text-4xl">😔</span>
+                <span className="flex justify-center text-muted-foreground"><Icon name="chat" className="h-10 w-10" /></span>
                 <p className="text-muted-foreground mt-3">ไม่พบแชทนี้</p>
-                <Link href="/chats" className="mt-3 inline-block text-sm text-primary hover:underline">กลับไปหน้าแชท →</Link>
+                <Link href="/chats" className="mt-3 inline-block text-sm text-primary hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">กลับไปหน้าแชท →</Link>
             </div>
         );
     }
@@ -86,10 +87,10 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
         <div className="max-w-3xl mx-auto flex flex-col h-[calc(100vh-10rem)] lg:h-[calc(100vh-4rem)] bg-card rounded-xl border border-border overflow-hidden">
             {/* Header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-                <Link href="/chats" className="text-muted-foreground hover:text-primary text-lg" aria-label="กลับ">←</Link>
+                <Link href="/chats" className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" aria-label="กลับไปหน้าแชท"><Icon name="arrow-left" className="h-5 w-5" /></Link>
                 {other && (
-                    <Link href={`/students/${other.id}`} className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+                    <Link href={`/students/${other.id}`} className="flex items-center gap-3 min-w-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                        <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-white text-sm font-semibold shrink-0">
                             {getInitials(other.name)}
                         </div>
                         <div className="min-w-0">
@@ -101,9 +102,9 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-slate-50/50">
+            <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-muted">
                 {messages.length === 0 && (
-                    <p className="text-center text-sm text-muted-foreground py-10">ยังไม่มีข้อความ — ทักทายกันก่อนเลย 👋</p>
+                    <p className="text-center text-sm text-muted-foreground py-10">ยังไม่มีข้อความ — ทักทายกันก่อนเลย</p>
                 )}
                 {messages.map((m) => {
                     const mine = m.senderId === user?.studentId;
@@ -111,7 +112,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                         <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                             <div className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words ${mine ? "gradient-primary text-white rounded-br-md" : "bg-card border border-border rounded-bl-md"}`}>
                                 {m.body}
-                                <span className={`block text-[10px] mt-1 ${mine ? "text-white/70 text-right" : "text-muted-foreground"}`}>{timeLabel(m.createdAt)}</span>
+                                <span className={`block text-xs mt-1 ${mine ? "text-white/70 text-right" : "text-muted-foreground"}`}>{timeLabel(m.createdAt)}</span>
                             </div>
                         </div>
                     );
@@ -126,11 +127,12 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                     onChange={(e) => setText(e.target.value)}
                     maxLength={2000}
                     placeholder="พิมพ์ข้อความ..."
-                    className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label="ข้อความ"
                 />
                 <button type="submit" disabled={sending || !text.trim()}
-                    className="px-5 py-2.5 rounded-xl gradient-primary text-white text-sm font-medium disabled:opacity-40">
-                    ส่ง
+                    className="px-5 py-2.5 rounded-xl gradient-primary text-white text-sm font-medium disabled:opacity-40 inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                    <Icon name="send" className="h-4 w-4" /> ส่ง
                 </button>
             </form>
             {error && <p className="px-4 pb-2 text-xs text-destructive">{error}</p>}

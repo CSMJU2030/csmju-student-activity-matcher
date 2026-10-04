@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Icon } from "@/components/Icon";
 import { InterestCategoryData, InterestWithCategory } from "@/lib/data/interests";
 
 interface InterestPickerProps {
@@ -52,13 +53,13 @@ export function InterestPicker({ allInterests, categories, selectedIds, disabled
                 placeholder="ค้นหา interest..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                className="w-full px-4 py-2 rounded-xl border border-input bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-sm"
             />
             <div className="flex flex-wrap gap-2">
                 <button
                     type="button"
                     onClick={() => setCategoryId("all")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${categoryId === "all" ? "bg-primary text-white" : "bg-accent"}`}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${categoryId === "all" ? "bg-primary text-white" : "bg-accent"}`}
                 >
                     ทั้งหมด
                 </button>
@@ -67,7 +68,7 @@ export function InterestPicker({ allInterests, categories, selectedIds, disabled
                         type="button"
                         key={cat.id}
                         onClick={() => setCategoryId(cat.id)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${categoryId === cat.id ? "bg-primary text-white" : "bg-accent"}`}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${categoryId === cat.id ? "bg-primary text-white" : "bg-accent"}`}
                     >
                         {cat.icon} {cat.name}
                     </button>
@@ -84,7 +85,7 @@ export function InterestPicker({ allInterests, categories, selectedIds, disabled
                         key={interest.id}
                         onClick={() => onAdd(interest.id)}
                         disabled={disabled}
-                        className="px-3 py-1.5 rounded-full text-xs bg-accent hover:bg-primary/10 hover:text-primary transition-colors disabled:opacity-50"
+                        className="px-3 py-1.5 rounded-full text-xs bg-accent hover:bg-primary/10 hover:text-primary transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                         {interest.icon} {interest.name}
                     </button>
@@ -93,8 +94,9 @@ export function InterestPicker({ allInterests, categories, selectedIds, disabled
 
             {/* Add a missing one, e.g. a game that is not in "Games" yet */}
             <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 p-3 space-y-2">
-                <p className="text-xs font-medium text-primary">
-                    ➕ ไม่เจอที่ต้องการ? เพิ่มใหม่{activeCategory ? ` ในหมวด ${activeCategory.icon} ${activeCategory.name}` : ""}
+                <p className="text-xs font-medium text-primary flex items-center gap-1">
+                    <Icon name="plus" className="h-4 w-4 shrink-0" />
+                    <span>ไม่เจอที่ต้องการ? เพิ่มใหม่{activeCategory ? ` ในหมวด ${activeCategory.icon} ${activeCategory.name}` : ""}</span>
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
                     <input
@@ -103,13 +105,13 @@ export function InterestPicker({ allInterests, categories, selectedIds, disabled
                         onChange={(e) => setNewName(e.target.value)}
                         maxLength={50}
                         placeholder={activeCategory ? `ชื่อ${activeCategory.name === "Games" ? "เกม" : ""}ที่ต้องการเพิ่ม` : "ชื่อ interest ใหม่"}
-                        className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
                     {!activeCategory && (
                         <select
                             value={newCategoryId}
                             onChange={(e) => setNewCategoryId(e.target.value)}
-                            className="px-3 py-2 rounded-lg border border-border bg-background text-sm"
+                            className="px-3 py-2 rounded-lg border border-border bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
                             <option value="">เลือกหมวด...</option>
                             {categories.map((c) => (
@@ -121,7 +123,7 @@ export function InterestPicker({ allInterests, categories, selectedIds, disabled
                         type="button"
                         onClick={create}
                         disabled={disabled || !canCreate}
-                        className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 disabled:opacity-40"
+                        className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                         เพิ่ม
                     </button>

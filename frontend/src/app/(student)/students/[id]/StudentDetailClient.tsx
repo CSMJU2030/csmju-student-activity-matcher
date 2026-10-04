@@ -6,6 +6,7 @@ import Link from "next/link";
 import { InterestWithCategory, LookingForOptionData } from "@/lib/data/interests";
 import { StudentData } from "@/lib/data/students";
 import { getInitials } from "@/lib/utils";
+import { Icon } from "@/components/Icon";
 import { ChatButton } from "@/components/ChatButton";
 
 interface StudentDetailClientProps {
@@ -50,10 +51,10 @@ export function StudentDetailClient({
     if (!student) {
         return (
             <div className="text-center py-20 text-muted-foreground">
-                <p className="text-4xl mb-4">🔍</p>
+                <span className="flex justify-center mb-4"><Icon name="search" className="h-10 w-10" /></span>
                 <p className="text-lg font-semibold">ไม่พบนักศึกษา</p>
-                <Link href="/discover" className="mt-4 inline-block text-primary hover:underline">
-                    ← กลับไปค้นหา
+                <Link href="/discover" className="mt-4 inline-flex items-center gap-1 text-primary hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                    <Icon name="arrow-left" className="h-4 w-4" /> กลับไปค้นหา
                 </Link>
             </div>
         );
@@ -64,13 +65,13 @@ export function StudentDetailClient({
     return (
         <div className="max-w-3xl mx-auto space-y-6">
             {/* Back Button */}
-            <Link href="/discover" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
-                ← กลับ
+            <Link href="/discover" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                <Icon name="arrow-left" className="h-4 w-4" /> กลับ
             </Link>
 
             {/* Profile Card */}
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-                <div className="gradient-primary h-28" />
+                <div className="brand-gradient h-28" />
                 <div className="p-6 -mt-10">
                     <div className="flex items-end gap-4">
                         <div className="w-16 h-16 rounded-2xl bg-card shadow-lg flex items-center justify-center text-xl font-bold gradient-primary text-white border-4 border-white">
@@ -84,8 +85,8 @@ export function StudentDetailClient({
                         </div>
                         {!isOwnProfile && matchPercentage > 0 && (
                             <div className="text-center">
-                                <div className="text-2xl font-bold text-primary">{matchPercentage}%</div>
-                                <p className="text-xs text-muted-foreground">Match</p>
+                                <div className="text-2xl font-bold text-primary tabular-nums">{matchPercentage}%</div>
+                                <p className="text-xs text-muted-foreground">ความเข้ากัน</p>
                             </div>
                         )}
                         {!isOwnProfile && currentStudent && <ChatButton studentId={student.id} />}
@@ -96,16 +97,16 @@ export function StudentDetailClient({
             {/* Bio */}
             {student.bio && (
                 <div className="bg-card rounded-xl border border-border p-5">
-                    <h2 className="text-sm font-semibold mb-2">📝 Bio</h2>
+                    <h2 className="text-sm font-semibold mb-2 flex items-center gap-1.5"><Icon name="edit" className="h-4 w-4" /> แนะนำตัว</h2>
                     <p className="text-sm text-muted-foreground">{student.bio}</p>
                 </div>
             )}
 
             {/* Common Interests (only when viewing another student) */}
             {!isOwnProfile && commonInterests.length > 0 && (
-                <div className="bg-gradient-to-b from-primary/5 to-transparent rounded-xl border border-primary/20 p-5">
-                    <h2 className="text-sm font-semibold text-primary mb-3">
-                        ❤️ ความสนใจร่วมกัน ({commonInterests.length} อย่าง)
+                <div className="bg-primary/5 rounded-xl border border-primary/20 p-5">
+                    <h2 className="text-sm font-semibold text-primary mb-3 flex items-center gap-1.5 tabular-nums">
+                        <Icon name="heart" className="h-4 w-4" /> ความสนใจร่วมกัน ({commonInterests.length} อย่าง)
                     </h2>
                     <div className="flex flex-wrap gap-2">
                         {commonInterests.map((interest) => (
@@ -122,9 +123,9 @@ export function StudentDetailClient({
 
             {/* All Interests */}
             <div className="bg-card rounded-xl border border-border p-5">
-                <h2 className="text-sm font-semibold mb-3">✨ ความสนใจ ({studentInterests.length})</h2>
+                <h2 className="text-sm font-semibold mb-3 flex items-center gap-1.5 tabular-nums"><Icon name="sparkles" className="h-4 w-4" /> ความสนใจ ({studentInterests.length})</h2>
                 {studentInterests.length === 0 ? (
-                    <p className="text-sm text-muted-foreground italic">ยังไม่มี Interest</p>
+                    <p className="text-sm text-muted-foreground italic">ยังไม่ได้เลือกความสนใจ</p>
                 ) : (
                     <div className="flex flex-wrap gap-2">
                         {studentInterests.map((interest) => {
@@ -148,7 +149,7 @@ export function StudentDetailClient({
             {/* Looking For */}
             {studentLookingFor.length > 0 && (
                 <div className="bg-card rounded-xl border border-border p-5">
-                    <h2 className="text-sm font-semibold mb-3">🎯 กำลังหา</h2>
+                    <h2 className="text-sm font-semibold mb-3 flex items-center gap-1.5"><Icon name="target" className="h-4 w-4" /> กำลังมองหา</h2>
                     <div className="flex flex-wrap gap-2">
                         {studentLookingFor.map((lf) => (
                             <span

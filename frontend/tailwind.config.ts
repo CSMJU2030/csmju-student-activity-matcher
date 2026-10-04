@@ -43,6 +43,26 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Standard palette by its official names (ui-design-system.md 3.1).
+        // The shadcn-style variables above already carry the same values
+        // (primary = primary-container, muted-foreground = on-surface-variant, ...).
+        "primary-container": "#2154d9",
+        "on-primary-container": "#d2daff",
+        "primary-fixed": "#dce1ff",
+        "on-surface": "#191c1d",
+        "on-surface-variant": "#434654",
+        outline: "#747686",
+        "outline-variant": "#c4c5d7",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-low": "#f3f4f5",
+        "surface-container": "#edeeef",
+        "surface-variant": "#e1e3e4",
+        "brand-navy": "#16264d",
+        "brand-blue": "#0d4fa8",
+        success: "#10b981",
+        error: "#ba1a1a",
+        "error-container": "#ffdad6",
+        "on-error-container": "#93000a",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -50,7 +70,7 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-noto-thai)", "Inter", "system-ui", "sans-serif"],
       },
     },
   },

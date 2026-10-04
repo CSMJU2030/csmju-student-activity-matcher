@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 import { StudentData } from "@/lib/data/students";
 
 interface StudentListClientProps {
@@ -40,7 +41,7 @@ export function StudentListClient({ students }: StudentListClientProps) {
         <div className="max-w-6xl mx-auto space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold">🏫 Computer Science Students</h1>
+                    <h1 className="text-2xl font-bold flex items-center gap-2"><Icon name="graduation" className="h-6 w-6 text-primary" /> นักศึกษาวิทยาการคอมพิวเตอร์</h1>
                     <p className="text-muted-foreground mt-1">ฐานข้อมูลนักศึกษา (Official Maejo REG)</p>
                 </div>
             </div>
@@ -49,21 +50,22 @@ export function StudentListClient({ students }: StudentListClientProps) {
             <div className="bg-card rounded-xl border border-border p-4 flex flex-col sm:flex-row gap-3">
                 <input
                     type="text"
-                    placeholder="Search by Name or Student ID..."
+                    placeholder="ค้นหาด้วยชื่อหรือรหัสนักศึกษา..."
+                    aria-label="ค้นหานักศึกษา"
                     value={search}
                     onChange={(e) => {
                         setSearch(e.target.value);
                         setPage(1);
                     }}
-                    className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="flex-1 px-4 py-2.5 border border-border rounded-lg text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
 
                 <select value={yearFilter} onChange={(e) => {
                     setYearFilter(e.target.value);
                     setPage(1);
                 }}
-                    className="px-4 py-2.5 rounded-lg border border-border bg-background text-sm min-w-32 focus:outline-none focus:ring-2 focus:ring-primary/50">
-                    <option value="">ทั้งหมด (All Years)</option>
+                    className="px-4 py-2.5 rounded-lg border border-border bg-background text-sm min-w-32 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="กรองตามชั้นปี">
+                    <option value="">ทุกชั้นปี</option>
                     <option value="2567">ปี 1 (2567)</option>
                     <option value="2566">ปี 2 (2566)</option>
                     <option value="2565">ปี 3 (2565)</option>
@@ -78,13 +80,13 @@ export function StudentListClient({ students }: StudentListClientProps) {
                         <Link
                             key={student.id}
                             href={`/students/${student.id}`}
-                            className="bg-card rounded-xl border border-border p-5 card-hover flex flex-col items-center text-center object-cover"
+                            className="bg-card rounded-xl border border-border p-5 transition-shadow hover:shadow-md flex flex-col items-center text-center object-cover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xl font-bold shrink-0 mb-3">
+                            <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center text-white text-xl font-bold shrink-0 mb-3">
                                 {student.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
                             </div>
                             <h3 className="font-semibold text-foreground truncate w-full">{student.name}</h3>
-                            <p className="text-sm text-gray-500">{student.studentId}</p>
+                            <p className="text-sm text-muted-foreground">{student.studentId}</p>
                             <div className="mt-2 text-xs font-medium bg-accent px-3 py-1 rounded-full text-foreground/80">
                                 รหัส {student.year}
                             </div>
@@ -93,7 +95,7 @@ export function StudentListClient({ students }: StudentListClientProps) {
                 </div>
             ) : (
                 <div className="text-center py-16 bg-card rounded-xl border border-border">
-                    <span className="text-4xl block mb-4">🔍</span>
+                    <span className="flex justify-center mb-4 text-muted-foreground"><Icon name="search" className="h-10 w-10" /></span>
                     <h3 className="text-lg font-bold">ไม่พบข้อมูล</h3>
                     <p className="text-muted-foreground mt-1">ลองเปลี่ยนคำค้นหา หรือชั้นปีดูใหม่อีกครั้ง</p>
                 </div>
@@ -105,19 +107,19 @@ export function StudentListClient({ students }: StudentListClientProps) {
                     <button
                         disabled={page === 1}
                         onClick={() => setPage(p => Math.max(1, p - 1))}
-                        className="px-4 py-2 border border-border rounded-lg bg-card disabled:opacity-50 hover:bg-accent transition-colors text-sm font-medium"
+                        className="px-4 py-2 border border-border rounded-lg bg-card disabled:opacity-50 hover:bg-accent transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
-                        Previous
+                        ก่อนหน้า
                     </button>
-                    <span className="text-sm font-medium px-4">
-                        Page {page} of {totalPages}
+                    <span className="text-sm font-medium px-4 tabular-nums">
+                        หน้า {page} จาก {totalPages}
                     </span>
                     <button
                         disabled={page === totalPages}
                         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                        className="px-4 py-2 border border-border rounded-lg bg-card disabled:opacity-50 hover:bg-accent transition-colors text-sm font-medium"
+                        className="px-4 py-2 border border-border rounded-lg bg-card disabled:opacity-50 hover:bg-accent transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
-                        Next
+                        ถัดไป
                     </button>
                 </div>
             )}
