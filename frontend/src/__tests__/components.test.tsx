@@ -1,3 +1,5 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { ConfirmButton } from '@/components/ConfirmButton';
 import { InterestPicker } from '@/components/InterestPicker';
@@ -11,9 +13,11 @@ const interest = (id: string, name: string, cat: InterestCategoryData): Interest
 });
 const all = [interest('i-val', 'Valorant', games), interest('i-mc', 'Minecraft', games), interest('i-kpop', 'K-Pop', music)];
 
+afterEach(() => cleanup());
+
 describe('ConfirmButton', () => {
   it('needs two clicks before running the action', async () => {
-    const onConfirm = jest.fn();
+    const onConfirm = vi.fn();
     render(<ConfirmButton onConfirm={onConfirm} confirmLabel="แน่ใจ?">ลบ</ConfirmButton>);
 
     fireEvent.click(screen.getByRole('button', { name: 'ลบ' }));
@@ -25,8 +29,8 @@ describe('ConfirmButton', () => {
 
 describe('InterestPicker', () => {
   const setup = (selectedIds: string[] = []) => {
-    const onAdd = jest.fn();
-    const onCreate = jest.fn().mockResolvedValue(undefined);
+    const onAdd = vi.fn();
+    const onCreate = vi.fn().mockResolvedValue(undefined);
     render(<InterestPicker allInterests={all} categories={[games, music]} selectedIds={selectedIds} onAdd={onAdd} onCreate={onCreate} />);
     return { onAdd, onCreate };
   };
@@ -41,7 +45,7 @@ describe('InterestPicker', () => {
   it('adds a missing game straight into the selected category', async () => {
     const { onCreate } = setup();
     fireEvent.click(screen.getByRole('button', { name: /🎮 Games/ }));
-    expect(screen.getByText(/เพิ่มใหม่ ในหมวด 🎮 Games/)).toBeInTheDocument();
+    expect(screen.getByText(/เพิ่มใหม่ ในหมวด 🎮 Games/)).toBeTruthy();
 
     fireEvent.change(screen.getByPlaceholderText('ชื่อเกมที่ต้องการเพิ่ม'), { target: { value: 'Monster Hunter' } });
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'เพิ่ม' })); });
@@ -52,23 +56,23 @@ describe('InterestPicker', () => {
     setup();
     fireEvent.click(screen.getByRole('button', { name: /🎮 Games/ }));
     fireEvent.change(screen.getByPlaceholderText('ชื่อเกมที่ต้องการเพิ่ม'), { target: { value: 'valorant' } });
-    expect(screen.getByRole('button', { name: 'เพิ่ม' })).toBeDisabled();
-    expect(screen.getByText(/มี "valorant" อยู่แล้ว/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'เพิ่ม' })).toHaveProperty('disabled', true);
+    expect(screen.getByText(/มี "valorant" อยู่แล้ว/)).toBeTruthy();
   });
 
   it('asks for a category when "all" is selected', () => {
     const { onCreate } = setup();
     fireEvent.change(screen.getByPlaceholderText('ชื่อ interest ใหม่'), { target: { value: 'Jazz' } });
-    expect(screen.getByRole('button', { name: 'เพิ่ม' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'เพิ่ม' })).toHaveProperty('disabled', true);
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'c-music' } });
-    expect(screen.getByRole('button', { name: 'เพิ่ม' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'เพิ่ม' })).toHaveProperty('disabled', false);
     expect(onCreate).not.toHaveBeenCalled();
   });
 });
 
 describe('InterestMultiSelect', () => {
   it('adds, removes and respects the maximum', () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const { rerender } = render(<InterestMultiSelect allInterests={all} value={['i-val']} onChange={onChange} max={2} />);
 
     fireEvent.click(screen.getByRole('button', { name: /Valorant ×/ }));
@@ -77,6 +81,6 @@ describe('InterestMultiSelect', () => {
     expect(onChange).toHaveBeenLastCalledWith(['i-val', 'i-kpop']);
 
     rerender(<InterestMultiSelect allInterests={all} value={['i-val', 'i-kpop']} onChange={onChange} max={2} />);
-    expect(screen.getByRole('button', { name: /Minecraft/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Minecraft/ })).toHaveProperty('disabled', true);
   });
 });

@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { timeAgo } from '@/lib/api/social';
 import { NoStudentProfileError, loadSession } from '@/lib/session';
 
@@ -5,7 +6,7 @@ const respond = (status: number, data: unknown) =>
   Promise.resolve({ ok: status === 200, status, json: () => Promise.resolve({ success: status === 200, data }) } as Response);
 
 describe('loadSession', () => {
-  const fetchMock = jest.fn();
+  const fetchMock = vi.fn();
   beforeEach(() => {
     global.fetch = fetchMock as unknown as typeof fetch;
     fetchMock.mockReset();

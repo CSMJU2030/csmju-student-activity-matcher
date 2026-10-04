@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 export function sum(a: number, b: number): number {
   return a + b;
 }

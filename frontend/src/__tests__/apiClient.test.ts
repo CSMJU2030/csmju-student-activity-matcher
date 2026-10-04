@@ -1,11 +1,12 @@
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiSend, fetchJsonWithAuth, startReSso, toQuery } from '@/lib/api/apiClient';
 
 const respond = (status: number, body: unknown) =>
   Promise.resolve({ ok: status >= 200 && status < 300, status, json: () => Promise.resolve(body) } as Response);
 
 describe('apiClient (browser)', () => {
-  const fetchMock = jest.fn();
-  const assign = jest.fn();
+  const fetchMock = vi.fn();
+  const assign = vi.fn();
 
   beforeAll(() => {
     // jsdom's location cannot navigate; capture the re-SSO navigation instead.
