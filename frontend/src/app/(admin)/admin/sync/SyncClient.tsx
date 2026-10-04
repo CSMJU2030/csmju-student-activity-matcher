@@ -210,7 +210,7 @@ export function SyncClient({ logs }: SyncClientProps) {
                             {logs.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-10 text-center text-muted-foreground italic">
-                                        ยังไม่มีประวัติการซิงก์ข้อมูล กดปุ่ม "เริ่มซิงก์" เพื่อเริ่มต้น
+                                        ยังไม่มีประวัติการซิงก์ข้อมูล กดปุ่ม &ldquo;เริ่มซิงก์&rdquo; เพื่อเริ่มต้น
                                     </td>
                                 </tr>
                             ) : logs.map((log) => (
