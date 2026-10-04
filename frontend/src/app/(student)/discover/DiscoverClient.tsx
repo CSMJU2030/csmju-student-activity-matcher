@@ -158,8 +158,17 @@ export function DiscoverClient({
                         <div className="bg-gradient-to-br from-slate-50 to-blue-50 border border-blue-100 rounded-3xl p-10 text-center">
                             <span className="text-4xl block mb-3">🧩</span>
                             <h3 className="font-semibold text-lg text-slate-800">No Matches Yet</h3>
-                            <p className="text-sm text-slate-500 mt-2 mb-5">You need to add some interests to your profile before we can match you up with others.</p>
-                            <Link href="/profile" className="text-sm text-primary font-medium hover:underline">Go to Profile →</Link>
+                            {currentStudent && currentStudent.interestIds.length > 0 ? (
+                                <>
+                                    <p className="text-sm text-slate-500 mt-2 mb-5">ยังไม่มีใครสนใจเรื่องเดียวกับคุณ — ลองเพิ่มความสนใจให้หลากหลายขึ้น หรือรอเพื่อน ๆ เข้ามาเลือก</p>
+                                    <Link href="/profile" className="text-sm text-primary font-medium hover:underline">เพิ่มความสนใจ →</Link>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-sm text-slate-500 mt-2 mb-5">เพิ่มความสนใจในโปรไฟล์ก่อน ระบบจะจับคู่คุณกับเพื่อนที่สนใจเหมือนกัน</p>
+                                    <Link href="/profile" className="text-sm text-primary font-medium hover:underline">ไปที่โปรไฟล์ →</Link>
+                                </>
+                            )}
                         </div>
                     ) : (
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -205,9 +214,9 @@ export function DiscoverClient({
                             placeholder="Search by name, faculties, or specific interests..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary text-sm transition-all"
+                            className="flex-1 min-w-0 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary text-sm transition-all"
                         />
-                        <button onClick={() => setShowFilters(!showFilters)} className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all shadow-sm flex items-center gap-2 ${showFilters ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-700 hover:bg-slate-50"}`}>
+                        <button onClick={() => setShowFilters(!showFilters)} className={`shrink-0 px-5 py-3 rounded-xl border text-sm font-semibold transition-all shadow-sm flex items-center gap-2 ${showFilters ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-700 hover:bg-slate-50"}`}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                             Filters {selectedInterests.length > 0 && <span className="bg-primary text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full ml-1">{selectedInterests.length}</span>}
                         </button>

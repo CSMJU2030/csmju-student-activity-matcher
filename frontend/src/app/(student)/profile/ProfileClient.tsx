@@ -166,7 +166,7 @@ export function ProfileClient({
                         <div className="flex-1 mt-2 sm:mt-0 pb-1">
                             <h1 className="text-2xl font-bold leading-normal pt-1">{student.name}</h1>
                             <p className="text-sm text-muted-foreground mt-1">
-                                {student.faculty} · {student.program} · รหัส {student.year}
+                                {student.faculty} · {student.program} · ปี {student.year}
                             </p>
                             <p className="text-xs text-muted-foreground mt-0.5">ID: {student.studentId}</p>
                         </div>

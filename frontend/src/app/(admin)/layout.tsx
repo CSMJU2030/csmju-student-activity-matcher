@@ -5,14 +5,15 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 
-const NAV_ITEMS = [
+// `short` is the bottom-bar label on phones.
+const NAV_ITEMS: { href: string; label: string; short?: string; icon: string }[] = [
     { href: "/admin/dashboard", label: "Dashboard", icon: "📊" },
     { href: "/admin/students", label: "Students", icon: "🎓" },
     { href: "/admin/interests", label: "Interests", icon: "✨" },
-    { href: "/admin/catalog", label: "หมวดหมู่ & กำลังหา", icon: "🗂️" },
+    { href: "/admin/catalog", label: "หมวดหมู่ & กำลังหา", short: "หมวดหมู่", icon: "🗂️" },
     { href: "/admin/groups", label: "Groups", icon: "👥" },
     { href: "/admin/activities", label: "Activities", icon: "🎯" },
-    { href: "/admin/sync", label: "Sync REG", icon: "🔄" },
+    { href: "/admin/sync", label: "Sync REG", short: "Sync", icon: "🔄" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -48,7 +49,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                 <nav className="flex-1 p-4 space-y-1">
                     {NAV_ITEMS.map((item) => {
-                        const isActive = pathname === item.href;
+                        const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
                         return (
                             <Link
                                 key={item.href}
@@ -87,15 +88,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             {/* Mobile Bottom Nav */}
             <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-foreground z-40">
-                <div className="flex justify-around py-2">
+                <div className="flex justify-between overflow-x-auto py-2 px-1">
                     {NAV_ITEMS.map((item) => {
-                        const isActive = pathname === item.href;
+                        const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
                         return (
                             <Link key={item.href} href={item.href}
-                                className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors ${isActive ? "text-white" : "text-white/40"
+                                className={`flex flex-col items-center gap-0.5 py-1 px-2 shrink-0 transition-colors ${isActive ? "text-white" : "text-white/40"
                                     }`}>
                                 <span className="text-lg">{item.icon}</span>
-                                <span className="text-[10px] font-medium">{item.label}</span>
+                                <span className="text-[10px] font-medium whitespace-nowrap">{item.short ?? item.label}</span>
                             </Link>
                         );
                     })}
