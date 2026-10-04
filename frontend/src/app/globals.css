@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 215 25% 27%;
+    --card: 210 40% 98%;
+    --card-foreground: 215 25% 27%;
+    --popover: 210 40% 98%;
+    --popover-foreground: 215 25% 27%;
+    --primary: 210 100% 30%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 211 100% 95%;
+    --secondary-foreground: 210 100% 30%;
+    --muted: 211 100% 95%;
+    --muted-foreground: 215 25% 45%;
+    --accent: 211 100% 95%;
+    --accent-foreground: 210 100% 30%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214 25% 85%;
+    --input: 214 25% 85%;
+    --ring: 210 100% 30%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/40;
+}
+
+/* Smooth page transitions */
+.page-enter {
+  animation: fadeIn 0.3s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Card hover effects */
+.card-hover {
+  @apply transition-all duration-200 ease-out;
+}
+.card-hover:hover {
+  @apply shadow-lg -translate-y-0.5;
+}
+
+/* Gradient backgrounds */
+.gradient-primary {
+  background: linear-gradient(135deg, hsl(210, 100%, 35%) 0%, hsl(210, 100%, 25%) 100%);
+  color: white;
+}
+.gradient-warm {
+  background: linear-gradient(135deg, hsl(210, 50%, 95%) 0%, hsl(211, 100%, 90%) 100%);
+}
+.gradient-cool {
+  background: linear-gradient(135deg, hsl(210, 100%, 40%) 0%, hsl(210, 100%, 30%) 100%);
+}
+.gradient-subtle {
+  background: linear-gradient(135deg, hsl(211, 100%, 98%) 0%, hsl(211, 100%, 92%) 100%);
+}

@@ -1,0 +1,297 @@
+// CSMJU Demo Subsystem (room booking) - OWN database schema.
+//
+// Naming follows the CSMJU2030 Subsystem Standard: PostgreSQL tables are plural
+// snake_case and every column is snake_case through @map, while Prisma/TypeScript
+// field names stay camelCase. Application code is therefore unchanged.
+//
+// This database belongs to the subsystem only. It never contains Core Hub
+// users, passwords, sessions or key material. `Booking.coreUserId` is an
+// EXTERNAL identity reference to a Core Hub user id (`sub`) - nothing more.
+//
+// Rooms are Core Hub reference data (GET /api/v1/rooms), so there is no rooms
+// table here: a booking keeps only the room `code`, and the name, building
+// and capacity are read from Core Hub whenever they are shown.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+// The connection string is supplied by prisma.config.ts (CLI) and by the
+// PrismaPg adapter in PrismaService (runtime) - always this subsystem's own
+// DATABASE_URL, never the Core Hub database.
+datasource db {
+  provider = "postgresql"
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model Booking {
+  id String @id @default(uuid())
+
+  /// Core Hub room `code` (e.g. LAB-1) - checked against Core Hub when booked.
+  roomCode String @map("room_code")
+
+  /// Who asked for the room: the Core Hub `sub` claim, never a local account.
+  coreUserId String @map("core_user_id")
+  /// Email claim at booking time, kept so staff can see who asked.
+  email      String
+
+  title    String
+  purpose  String?
+  startsAt DateTime @map("starts_at")
+  endsAt   DateTime @map("ends_at")
+
+  status BookingStatus @default(PENDING)
+
+  /// Core Hub `sub` of the staff member who approved or rejected it.
+  reviewedByCoreUserId String?   @map("reviewed_by_core_user_id")
+  reviewNote           String?   @map("review_note")
+  reviewedAt           DateTime? @map("reviewed_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([roomCode, startsAt])
+  @@index([coreUserId])
+  @@index([status])
+  @@map("bookings")
+}
+
+model SyncLog {
+  id        String   @id @default(uuid())
+  source    String
+  faculty   String
+  program   String
+  fetched   Int
+  inserted  Int
+  updated   Int
+  skipped   Int
+  failed    Int
+  status    String 
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sync_logs")
+}
+
+model Student {
+  id         String   @id @default(uuid())
+  studentId  String   @unique @map("student_id")
+  name       String
+  faculty    String
+  program    String
+  year       Int
+  bio        String?
+  dataSource String   @default("SEED") @map("data_source")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt       @map("updated_at")
+
+  interests            StudentInterest[]
+  lookingFors          StudentLookingFor[]
+  groupsCreated        Group[]               @relation("GroupCreator")
+  groupMembers         GroupMember[]
+  activitiesCreated    Activity[]            @relation("ActivityCreator")
+  activityParticipants ActivityParticipant[]
+  notifications        Notification[]        @relation("NotificationRecipient")
+  notificationsCaused  Notification[]        @relation("NotificationActor")
+  conversationsAsA     Conversation[]        @relation("ConversationStudentA")
+  conversationsAsB     Conversation[]        @relation("ConversationStudentB")
+  messagesSent         Message[]
+
+  @@map("students")
+}
+
+model InterestCategory {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  icon      String
+  color     String
+  interests Interest[]
+
+  @@map("interest_categories")
+}
+
+model Interest {
+  id         String           @id @default(uuid())
+  name       String
+  nameLower  String           @map("name_lower")
+  icon       String
+  categoryId String           @map("category_id")
+  isCustom   Boolean          @default(false) @map("is_custom")
+  isActive   Boolean          @default(true)  @map("is_active")
+  category   InterestCategory @relation(fields: [categoryId], references: [id])
+  
+  students   StudentInterest[]
+  groups     GroupInterest[]
+  activities ActivityInterest[]
+
+  @@unique([nameLower])
+  @@map("interests")
+}
+
+model StudentInterest {
+  studentId  String   @map("student_id")
+  interestId String   @map("interest_id")
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([studentId, interestId])
+  @@map("student_interests")
+}
+
+model LookingForOption {
+  id       String              @id @default(uuid())
+  label    String              @unique
+  icon     String
+  students StudentLookingFor[]
+
+  @@map("looking_for_options")
+}
+
+model StudentLookingFor {
+  studentId    String           @map("student_id")
+  lookingForId String           @map("looking_for_id")
+  student      Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  lookingFor   LookingForOption @relation(fields: [lookingForId], references: [id], onDelete: Cascade)
+
+  @@id([studentId, lookingForId])
+  @@map("student_looking_fors")
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  coverImage  String?  @map("cover_image")
+  creatorId   String   @map("creator_id")
+  creator     Student  @relation("GroupCreator", fields: [creatorId], references: [id])
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  members   GroupMember[]
+  interests GroupInterest[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  groupId   String   @map("group_id")
+  studentId String   @map("student_id")
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, studentId])
+  @@map("group_members")
+}
+
+model GroupInterest {
+  groupId    String   @map("group_id")
+  interestId String   @map("interest_id")
+  group      Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, interestId])
+  @@map("group_interests")
+}
+
+model Activity {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  date        String
+  time        String
+  location    String
+  capacity    Int
+  coverImage  String?  @map("cover_image")
+  creatorId   String   @map("creator_id")
+  creator     Student  @relation("ActivityCreator", fields: [creatorId], references: [id])
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  participants ActivityParticipant[]
+  interests    ActivityInterest[]
+
+  @@map("activities")
+}
+
+model ActivityParticipant {
+  activityId String   @map("activity_id")
+  studentId  String   @map("student_id")
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([activityId, studentId])
+  @@map("activity_participants")
+}
+
+model ActivityInterest {
+  activityId String   @map("activity_id")
+  interestId String   @map("interest_id")
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([activityId, interestId])
+  @@map("activity_interests")
+}
+
+// ── Matching notifications & chat ───────────────────────────────────────────
+
+/// In-app notification for a student (new interest match, new chat message).
+model Notification {
+  id          String    @id @default(uuid())
+  recipientId String    @map("recipient_id")
+  recipient   Student   @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  /// The student who caused it (matched with / sent the message), if any.
+  actorId     String?   @map("actor_id")
+  actor       Student?  @relation("NotificationActor", fields: [actorId], references: [id], onDelete: Cascade)
+  /// MATCH | MESSAGE
+  type        String
+  title       String
+  body        String
+  /// In-app path to open, e.g. /chats/<id> or /students/<id>
+  link        String?
+  /// One notification per key: a match is announced once per pair, and one
+  /// MESSAGE notification per conversation is refreshed instead of piling up.
+  dedupeKey   String?   @unique @map("dedupe_key")
+  readAt      DateTime? @map("read_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([recipientId, createdAt])
+  @@map("notifications")
+}
+
+/// 1:1 chat between two students. studentAId < studentBId keeps the pair unique.
+model Conversation {
+  id            String    @id @default(uuid())
+  studentAId    String    @map("student_a_id")
+  studentBId    String    @map("student_b_id")
+  studentA      Student   @relation("ConversationStudentA", fields: [studentAId], references: [id], onDelete: Cascade)
+  studentB      Student   @relation("ConversationStudentB", fields: [studentBId], references: [id], onDelete: Cascade)
+  lastReadAtA   DateTime? @map("last_read_at_a")
+  lastReadAtB   DateTime? @map("last_read_at_b")
+  lastMessageAt DateTime  @default(now()) @map("last_message_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  messages Message[]
+
+  @@unique([studentAId, studentBId])
+  @@index([studentBId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String       @map("conversation_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String       @map("sender_id")
+  sender         Student      @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  body           String
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
