@@ -9,6 +9,8 @@ export interface AppConfig {
   subsystemName: string;
   coreHub: {
     url: string;
+    /** Core Hub web app - /sso/authorize and /logout live there (auth-contract §5). */
+    webUrl: string;
     jwksUrl: string;
     issuer: string;
     audience: string;
@@ -34,10 +36,12 @@ export default (): AppConfig => {
   return {
     nodeEnv: process.env.NODE_ENV ?? 'development',
     port: num(process.env.PORT, 4201),
-    subsystemId: process.env.SUBSYSTEM_ID ?? 'csmju-demo-subsystem',
-    subsystemName: process.env.SUBSYSTEM_NAME ?? 'CSMJU Demo Subsystem',
+    // Must match the Core Hub registry and subsystem.yaml (reported by /api/health).
+    subsystemId: process.env.SUBSYSTEM_ID ?? 'csmju-student-activity-matcher',
+    subsystemName: process.env.SUBSYSTEM_NAME ?? 'Student Activity Matcher',
     coreHub: {
       url: coreHubUrl,
+      webUrl: process.env.CORE_HUB_WEB_URL ?? 'http://localhost:3100',
       jwksUrl:
         process.env.CORE_HUB_JWKS_URL ??
         `${coreHubUrl.replace(/\/+$/, '')}/api/v1/.well-known/jwks.json`,

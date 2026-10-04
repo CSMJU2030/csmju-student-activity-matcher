@@ -80,6 +80,8 @@ export interface User {
   studentId?: string;
   name: string;
   avatar: string;
+  /** When the Core Hub session token expires (ISO 8601), from /api/v1/me. */
+  sessionExpiresAt?: string;
 }
 
 export interface AuthState {

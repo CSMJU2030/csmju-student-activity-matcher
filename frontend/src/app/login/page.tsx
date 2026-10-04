@@ -4,56 +4,57 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 
-const API_ORIGIN = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api/v1").replace(/\/v1\/?$/, "");
+/** Dev-only shortcut accounts (the Core Hub seed). Hidden in production builds. */
+const MOCK_ACCOUNTS = [
+    { email: "student@core.local", label: "Student Account", icon: "🎓" },
+    { email: "admin@core.local", label: "Admin Account", icon: "🛡️" },
+];
+const SHOW_MOCK = process.env.NODE_ENV !== "production";
 
+/**
+ * The subsystem has no login form of its own (auth-contract §9): signing in
+ * means going through Core Hub via GET /auth/login.
+ */
 export default function LoginPage() {
-    const [email, setEmail] = useState("");
     const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const { signIn, user } = useAuth();
+    const [busy, setBusy] = useState<string | null>(null);
+    const { user, refresh, sessionError } = useAuth();
     const router = useRouter();
 
-    // Already signed in (session restored from a valid token): skip the login form.
+    // Already signed in: skip this page.
     useEffect(() => {
         if (user) router.replace(user.role === "admin" ? "/admin/dashboard" : "/dashboard");
     }, [user, router]);
 
-    const handleMockLogin = async (mockEmail: string) => {
-        setIsLoading(true);
+    const signInWithCoreHub = () => {
+        setBusy("sso");
+        window.location.assign("/auth/login?next=%2F");
+    };
+
+    const mockLogin = async (email: string) => {
+        setBusy(email);
         setError("");
         try {
-            const res = await fetch(`${API_ORIGIN}/auth/mock-login`, {
+            // Sets the same HttpOnly session cookie as the SSO callback.
+            const res = await fetch("/api/auth/mock-login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: mockEmail })
+                body: JSON.stringify({ email }),
             });
-            const data = await res.json();
-
-            if (!res.ok) throw new Error(data.error?.message || data.message || "Mock login failed");
-
-            // Look in data.data if the response interceptor wrapped it, otherwise direct
-            const token = data.data?.access_token || data.access_token;
-            if (!token) throw new Error("No access token provided by the server");
-
-            // Role and student profile are resolved by the backend from the verified token.
-            const user = await signIn(token);
-            router.push(user.role === "admin" ? "/admin/dashboard" : "/dashboard");
-        } catch (err: any) {
-            console.error(err);
-            setError(err.message || "Failed to connect to backend for mock token: " + err.message);
-            setIsLoading(false);
+            if (!res.ok) {
+                const data = await res.json().catch(() => null);
+                throw new Error(data?.error?.message || "Mock login failed");
+            }
+            const signedIn = await refresh();
+            if (!signedIn) throw new Error("เข้าสู่ระบบไม่สำเร็จ");
+            router.push(signedIn.role === "admin" ? "/admin/dashboard" : "/dashboard");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Mock login failed");
+            setBusy(null);
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const trimmedEmail = email.trim().toLowerCase();
-        if (trimmedEmail.endsWith("@core.local")) {
-            await handleMockLogin(trimmedEmail);
-        } else {
-            window.location.href = process.env.NEXT_PUBLIC_CORE_HUB_URL || "http://localhost:3100";
-        }
-    };
+    const shownError = error || sessionError;
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-pink-50 p-4">
@@ -69,79 +70,46 @@ export default function LoginPage() {
                     <p className="text-muted-foreground mt-2">ค้นหาเพื่อนที่มีความสนใจเหมือนกัน</p>
                 </div>
 
-                {/* Login Card */}
-                <div className="bg-card rounded-2xl shadow-xl shadow-primary/20 border border-primary/20 p-8">
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                                Email
-                            </label>
-                            <input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="กรอกอีเมลเพื่อเข้าสู่ระบบ"
-                                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                                required
-                            />
-                        </div>
+                <div className="bg-card rounded-2xl shadow-xl shadow-primary/20 border border-primary/20 p-8 space-y-5">
+                    <button
+                        type="button"
+                        onClick={signInWithCoreHub}
+                        disabled={busy !== null}
+                        className="w-full py-3 px-4 rounded-xl gradient-primary text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-primary/20"
+                    >
+                        {busy === "sso" ? "กำลังไปที่ Core Hub..." : "เข้าสู่ระบบผ่าน Core Hub (SSO)"}
+                    </button>
+                    <p className="text-xs text-muted-foreground text-center">ใช้บัญชีเดียวกับ CSMJU Core Hub — ระบบนี้ไม่มีรหัสผ่านของตัวเอง</p>
 
-                        {error && (
-                            <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-                                {error}
+                    {shownError && (
+                        <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{shownError}</div>
+                    )}
+
+                    {SHOW_MOCK && (
+                        <div className="pt-5 border-t border-border">
+                            <p className="text-xs text-muted-foreground text-center mb-3">โหมดพัฒนา: เข้าด้วยบัญชีทดสอบของ Core Hub</p>
+                            <div className="space-y-2">
+                                {MOCK_ACCOUNTS.map((account) => (
+                                    <button
+                                        key={account.email}
+                                        type="button"
+                                        onClick={() => mockLogin(account.email)}
+                                        disabled={busy !== null}
+                                        className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent transition-colors text-left disabled:opacity-50"
+                                    >
+                                        <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-sm">{account.icon}</span>
+                                        <div>
+                                            <p className="text-sm font-medium">{busy === account.email ? "กำลังเข้าสู่ระบบ..." : account.label}</p>
+                                            <p className="text-xs text-muted-foreground">{account.email}</p>
+                                        </div>
+                                    </button>
+                                ))}
                             </div>
-                        )}
-
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full py-3 px-4 rounded-xl gradient-primary text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
-                        >
-                            {isLoading ? (
-                                <span className="inline-flex items-center gap-2">
-                                    <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                                    กำลังเข้าสู่ระบบ...
-                                </span>
-                            ) : (
-                                "เข้าสู่ระบบ (SSO)"
-                            )}
-                        </button>
-                    </form>
-
-                    {/* Mock Credentials */}
-                    <div className="mt-6 pt-6 border-t border-border">
-                        <p className="text-xs text-muted-foreground text-center mb-3">ทดลองใช้งานด้วย Mock Account</p>
-                        <div className="space-y-2">
-                            <button
-                                onClick={() => setEmail("student@core.local")}
-                                className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent transition-colors text-left"
-                                type="button"
-                            >
-                                <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-sm">🎓</span>
-                                <div>
-                                    <p className="text-sm font-medium">Student Account</p>
-                                    <p className="text-xs text-muted-foreground">student@core.local</p>
-                                </div>
-                            </button>
-                            <button
-                                onClick={() => setEmail("admin@core.local")}
-                                className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent transition-colors text-left"
-                                type="button"
-                            >
-                                <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-sm">🛡️</span>
-                                <div>
-                                    <p className="text-sm font-medium">Admin Account</p>
-                                    <p className="text-xs text-muted-foreground">admin@core.local</p>
-                                </div>
-                            </button>
                         </div>
-                    </div>
+                    )}
                 </div>
 
-                <p className="text-center text-xs text-muted-foreground mt-6">
-                    Interest Match · MIS Project · Prototype V1
-                </p>
+                <p className="text-center text-xs text-muted-foreground mt-6">Interest Match · CSMJU2030</p>
             </div>
         </div>
     );

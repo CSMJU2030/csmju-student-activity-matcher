@@ -1,22 +1,46 @@
 import { timeAgo } from '@/lib/api/social';
-import { tokenSecondsLeft } from '@/lib/session';
+import { NoStudentProfileError, loadSession } from '@/lib/session';
 
-// session.ts imports server actions (next/headers); they are not exercised here.
-jest.mock('@/lib/actions', () => ({ setTokenCookie: jest.fn(), clearTokenCookie: jest.fn() }));
+const respond = (status: number, data: unknown) =>
+  Promise.resolve({ ok: status === 200, status, json: () => Promise.resolve({ success: status === 200, data }) } as Response);
 
-const jwt = (payload: object) => `h.${btoa(JSON.stringify(payload)).replace(/=+$/, '')}.s`;
-
-describe('tokenSecondsLeft', () => {
-  it('reads exp from the JWT payload', () => {
-    const exp = Math.floor(Date.now() / 1000) + 600;
-    expect(tokenSecondsLeft(jwt({ exp }))).toBeGreaterThan(590);
+describe('loadSession', () => {
+  const fetchMock = jest.fn();
+  beforeEach(() => {
+    global.fetch = fetchMock as unknown as typeof fetch;
+    fetchMock.mockReset();
   });
 
-  it('treats expired, missing or malformed tokens as expired', () => {
-    expect(tokenSecondsLeft(jwt({ exp: Math.floor(Date.now() / 1000) - 5 }))).toBeLessThanOrEqual(0);
-    expect(tokenSecondsLeft(null)).toBe(0);
-    expect(tokenSecondsLeft('not-a-jwt')).toBe(0);
-    expect(tokenSecondsLeft(jwt({ sub: 'no-exp' }))).toBe(0);
+  const me = (subsystemRole: string) => ({
+    id: 'user-002', email: 'student@core.local', coreRole: 'student', subsystemRole,
+    session: { expiresAt: '2030-01-01T00:00:00.000Z' },
+  });
+
+  it('builds the user from /me and /students/me (the cookie is the session)', async () => {
+    fetchMock
+      .mockReturnValueOnce(respond(200, me('STUDENT')))
+      .mockReturnValueOnce(respond(200, { id: 'row-1', name: 'ภาณุพงษ์ เวียงห้า' }));
+
+    await expect(loadSession()).resolves.toMatchObject({
+      role: 'student', studentId: 'row-1', name: 'ภาณุพงษ์ เวียงห้า', sessionExpiresAt: '2030-01-01T00:00:00.000Z',
+    });
+    expect(fetchMock.mock.calls.map((c) => c[0])).toEqual(['/api/v1/me', '/api/v1/students/me']);
+  });
+
+  it('admins need no student profile', async () => {
+    fetchMock.mockReturnValueOnce(respond(200, { ...me('ADMIN'), email: 'admin@core.local' }));
+    await expect(loadSession()).resolves.toMatchObject({ role: 'admin', studentId: undefined, name: 'admin@core.local' });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('no session cookie → null (not an error)', async () => {
+    fetchMock.mockReturnValueOnce(respond(401, null));
+    await expect(loadSession()).resolves.toBeNull();
+  });
+
+  it('a student account without a REG profile is reported, not silently empty', async () => {
+    fetchMock.mockReturnValueOnce(respond(200, me('STUDENT'))).mockReturnValueOnce(respond(404, null));
+    await expect(loadSession()).rejects.toBeInstanceOf(NoStudentProfileError);
   });
 });
 

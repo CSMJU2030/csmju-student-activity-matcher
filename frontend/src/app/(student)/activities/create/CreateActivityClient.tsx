@@ -13,7 +13,7 @@ export function CreateActivityClient({
     allInterests: InterestWithCategory[],
     categories: InterestCategoryData[]
 }) {
-    const { user, token } = useAuth(); // Assume token is retrieved from SSO integration
+    const { user } = useAuth();
     const router = useRouter();
 
     const [title, setTitle] = useState("");
@@ -40,7 +40,6 @@ export function CreateActivityClient({
         if (!time) { setError("กรุณาเลือกเวลา"); return; }
         if (!location.trim()) { setError("กรุณากรอกสถานที่"); return; }
         if (!user?.studentId) { setError("ไม่พบผู้ใช้งาน"); return; }
-        if (!token) { setError("กรุณาเข้าสู่ระบบ (Authentication token missing)"); return; }
 
         setIsPending(true);
 

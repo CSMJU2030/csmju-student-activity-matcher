@@ -1,6 +1,6 @@
 import { apiSend, fetchJsonWithAuth } from './apiClient';
 
-// Client-side chat + notification calls (token from localStorage).
+// Client-side chat + notification calls (the browser sends the HttpOnly session cookie).
 
 export interface StudentCard {
   id: string;

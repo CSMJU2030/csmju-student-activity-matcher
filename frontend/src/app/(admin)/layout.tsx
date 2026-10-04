@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <p className="text-xs text-white/50">{user?.email}</p>
                     </div>
                     <button
-                        onClick={() => { logout(); router.push("/login"); }}
+                        onClick={logout}
                         className="w-full px-4 py-2 text-sm text-white/60 hover:text-secondary-foreground hover:bg-card/5 rounded-lg transition-colors text-left"
                     >
                         🚪 ออกจากระบบ
@@ -82,7 +82,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <header className="lg:hidden fixed top-0 left-0 right-0 bg-foreground text-white z-40 px-4 py-3">
                 <div className="flex items-center justify-between">
                     <span className="font-bold">🛡️ Admin Panel</span>
-                    <button onClick={() => { logout(); router.push("/login"); }} className="text-sm text-white/60">🚪</button>
+                    <button onClick={logout} className="text-sm text-white/60">🚪</button>
                 </div>
             </header>
 

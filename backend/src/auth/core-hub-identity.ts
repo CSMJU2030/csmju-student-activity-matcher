@@ -20,6 +20,8 @@ export interface CoreHubIdentity {
   sessionId?: string;
   /** Result of the subsystem's own role mapping. */
   subsystemRole: SubsystemRole;
+  /** When the Core Hub token (and so this session) expires, ISO 8601. */
+  expiresAt?: string;
 }
 
 export interface CoreHubTokenPayload {

@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import { CollectionResult } from '../common/api-response';
+import { buildPaginationMeta } from '../common/dto/pagination.dto';
 import { CoreHubIdentity } from '../auth/core-hub-identity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { RequirePermissions } from '../auth/decorators/require-permissions.decorator';
@@ -28,13 +30,14 @@ export class ActivitiesController {
 
   @Get()
   @RequirePermissions(Permission.ACTIVITY_READ_ANY)
-  getActivities(@Query() query: QueryActivitiesDto) {
-    return this.activitiesService.findAll(query);
+  async getActivities(@Query() query: QueryActivitiesDto) {
+    const { items, total, page, limit } = await this.activitiesService.findAll(query);
+    return new CollectionResult(items, buildPaginationMeta(total, page, limit));
   }
 
   @Get(':id')
   @RequirePermissions(Permission.ACTIVITY_READ_ANY)
-  getActivity(@Param('id') id: string) {
+  getActivity(@Param('id', ParseUUIDPipe) id: string) {
     return this.activitiesService.findOne(id);
   }
 
@@ -47,28 +50,28 @@ export class ActivitiesController {
 
   @Patch(':id')
   @RequirePermissions(Permission.ACTIVITY_UPDATE_OWN, Permission.ACTIVITY_UPDATE_ANY)
-  async update(@CurrentUser() user: CoreHubIdentity, @Param('id') id: string, @Body() body: UpdateActivityDto) {
+  async update(@CurrentUser() user: CoreHubIdentity, @Param('id', ParseUUIDPipe) id: string, @Body() body: UpdateActivityDto) {
     await this.assertCanManage(user, id);
     return this.activitiesService.update(id, body, await this.currentStudent.actor(user));
   }
 
   @Delete(':id')
   @RequirePermissions(Permission.ACTIVITY_DELETE_OWN, Permission.ACTIVITY_DELETE_ANY)
-  async remove(@CurrentUser() user: CoreHubIdentity, @Param('id') id: string) {
+  async remove(@CurrentUser() user: CoreHubIdentity, @Param('id', ParseUUIDPipe) id: string) {
     await this.assertCanManage(user, id);
     return this.activitiesService.remove(id, await this.currentStudent.actor(user));
   }
 
   @Post(':id/join')
   @RequirePermissions(Permission.ACTIVITY_UPDATE_OWN)
-  async joinActivity(@CurrentUser() user: CoreHubIdentity, @Param('id') id: string) {
+  async joinActivity(@CurrentUser() user: CoreHubIdentity, @Param('id', ParseUUIDPipe) id: string) {
     const me = await this.currentStudent.require(user);
     return this.activitiesService.joinActivity(me.id, id);
   }
 
   @Delete(':id/leave')
   @RequirePermissions(Permission.ACTIVITY_UPDATE_OWN)
-  async leaveActivity(@CurrentUser() user: CoreHubIdentity, @Param('id') id: string) {
+  async leaveActivity(@CurrentUser() user: CoreHubIdentity, @Param('id', ParseUUIDPipe) id: string) {
     const me = await this.currentStudent.require(user);
     return this.activitiesService.leaveActivity(me.id, id);
   }
@@ -77,8 +80,8 @@ export class ActivitiesController {
   @RequirePermissions(Permission.ACTIVITY_UPDATE_OWN, Permission.ACTIVITY_UPDATE_ANY)
   async removeParticipant(
     @CurrentUser() user: CoreHubIdentity,
-    @Param('id') id: string,
-    @Param('studentId') studentId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('studentId', ParseUUIDPipe) studentId: string,
   ) {
     await this.assertCanManage(user, id);
     return this.activitiesService.removeParticipant(id, studentId, await this.currentStudent.actor(user));

@@ -1,80 +1,80 @@
-import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Body, Controller, HttpException, HttpStatus, Logger, Post, Res } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import type { Response } from 'express';
 import { Public } from './decorators/public.decorator';
 import { PrismaService } from '../prisma/prisma.service';
+import { buildSessionCookie, ssoCookieNames } from './sso-session';
 
 /** Dev-only: mock Core Hub account -> the subsystem profile (Student.studentId) it acts as. */
 export const MOCK_STUDENT_IDS: Record<string, string> = {
   'student@core.local': '6704101363', // ภาณุพงษ์ เวียงห้า (same code as the REG record)
 };
 
+/** The Core Hub dev seed accounts (csmju-core-hub backend/prisma/seed.ts) - never real credentials. */
+const MOCK_ACCOUNTS: Record<string, string> = {
+  'admin@core.local': 'password1',
+  'student@core.local': 'password2',
+  'staff@core.local': 'password3',
+  'alumni@core.local': 'password4',
+};
+
+/**
+ * Development shortcut: signs in as one of the Core Hub seed accounts and sets
+ * the same HttpOnly session cookie the SSO callback would. The token is a real
+ * Core Hub token and never reaches page JavaScript. Disabled in production -
+ * there the only way in is `GET /auth/login` (auth-contract §5, §9).
+ */
 @Controller('auth')
 export class MockAuthController {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(MockAuthController.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+  ) {}
 
   @Public()
   @Post('mock-login')
-  async mockLogin(@Body() body: { email: string }) {
-    if (process.env.NODE_ENV === 'production') {
+  async mockLogin(@Body() body: { email?: string }, @Res({ passthrough: true }) response: Response) {
+    if (this.config.get<string>('nodeEnv') === 'production') {
       throw new HttpException('Mock login is disabled in production', HttpStatus.FORBIDDEN);
     }
 
-    const email = body.email.toLowerCase().trim();
-    let password = '';
-
-    console.log(`\n[MockAuth] Received login request for email: ${email}`);
-
-    if (email === 'admin@core.local') {
-      password = 'password1';
-    } else if (email === 'student@core.local') {
-      password = 'password2';
-    } else if (email === 'staff@core.local') {
-      password = 'password3';
-    } else if (email === 'alumni@core.local') {
-      password = 'password4';
-    } else {
-      console.log(`[MockAuth] Rejecting unmapped .local email: ${email}`);
+    const email = String(body?.email ?? '').toLowerCase().trim();
+    const password = MOCK_ACCOUNTS[email];
+    if (!password) {
       throw new HttpException('Invalid mock email provided', HttpStatus.BAD_REQUEST);
     }
 
+    const coreHubUrl = this.config.get<string>('coreHub.url', 'http://localhost:3000').replace(/\/+$/, '');
+    let data: { access_token?: string; expires_in?: number };
     try {
-      console.log(`[MockAuth] Proxining credentials to Core Hub backend at http://localhost:3000/api/v1/auth/login`);
-      const response = await fetch('http://localhost:3000/api/v1/auth/login', {
+      const res = await fetch(`${coreHubUrl}/api/v1/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
-      const data = await response.json();
-      
-      if (!response.ok || data.success === false) {
-        console.error(`[MockAuth] Core Hub login failed:`, data);
-        throw new Error(data.message || data.error?.message || 'Login failed on Core Hub');
-      }
-
-      console.log(`[MockAuth] Core Hub returned successful JWT. Resolving proxy flow.`);
-      
-      // The Core Hub ResponseInterceptor wraps data in { success: true, data: { ... } }
-      // We must unwrap it so the frontend seamlessly receives the expected { access_token: ... } format natively.
-      const tokenData = data.data ? data.data : data;
-
-      // The JWT is issued by Core Hub and carries no subsystem student id, so bind the
-      // mock account to its student profile here and return the id alongside the token.
-      const studentId = MOCK_STUDENT_IDS[email];
-      if (!studentId) return tokenData;
-
-      const student = await this.prisma.student.findUnique({ where: { studentId } });
-      if (!student) {
-        throw new Error(`Student profile ${studentId} not found - run "npm run prisma:seed:test-student"`);
-      }
-      console.log(`[MockAuth] Bound ${email} -> student ${student.studentId} (${student.name})`);
-      return { ...tokenData, studentId: student.studentId };
+      const json = await res.json();
+      if (!res.ok || json.success === false) throw new Error(json.error?.message ?? json.message ?? `HTTP ${res.status}`);
+      data = json.data ?? json;
     } catch (error) {
-      console.error(`[MockAuth] Proxy flow exception:`, error);
-      const errMessage = error instanceof Error ? error.message : String(error);
-      throw new HttpException(
-        `Failed to reach Core Hub for mock login: ${errMessage}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      const message = error instanceof Error ? error.message : String(error);
+      throw new HttpException(`Failed to reach Core Hub for mock login: ${message}`, HttpStatus.BAD_GATEWAY);
     }
+    if (!data.access_token) {
+      throw new HttpException('Core Hub returned no access token', HttpStatus.BAD_GATEWAY);
+    }
+
+    const names = ssoCookieNames(this.config.get<string>('subsystemId', 'csmju-student-activity-matcher'));
+    response.setHeader('Cache-Control', 'no-store');
+    response.setHeader('Set-Cookie', buildSessionCookie(names, data.access_token, data.expires_in ?? 900, false));
+
+    const code = MOCK_STUDENT_IDS[email];
+    const student = code ? await this.prisma.student.findUnique({ where: { studentId: code } }) : null;
+    if (code && !student) {
+      throw new HttpException(`Student profile ${code} not found - run "npm run prisma:seed:test-student"`, HttpStatus.CONFLICT);
+    }
+    this.logger.log(`mock login ${email}${student ? ` -> student ${student.studentId}` : ''}`);
+    return { email, studentId: student?.studentId ?? null };
   }
 }

@@ -1,7 +1,9 @@
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsOptional, IsString, MaxLength } from 'class-validator';
+import { PaginationQueryDto } from '../../common/dto/pagination.dto';
 
-export class QueryActivitiesDto {
+/** `?page=&limit=` (max 100) plus the activity filters. */
+export class QueryActivitiesDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()
   @MaxLength(100)

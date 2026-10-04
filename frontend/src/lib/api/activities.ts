@@ -1,6 +1,6 @@
 import { apiSend, fetchJsonWithAuth } from './apiClient';
 
-// Client-side activity calls (the token comes from localStorage).
+// Client-side activity calls (the browser sends the HttpOnly session cookie).
 // Each throws an Error carrying the backend's message so the UI can show it.
 
 async function send<T>(method: string, url: string, body?: unknown): Promise<T> {
@@ -10,7 +10,7 @@ async function send<T>(method: string, url: string, body?: unknown): Promise<T> 
 }
 
 export async function fetchActivities() {
-  return fetchJsonWithAuth('/activities');
+  return fetchJsonWithAuth('/activities?limit=100');
 }
 
 export async function fetchActivityById(id: string) {

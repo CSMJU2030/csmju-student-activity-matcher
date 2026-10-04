@@ -12,7 +12,11 @@ async function bootstrap(): Promise<void> {
   // The central SSO callback stays at the root path, because that is the URL
   // registered for this subsystem in the Core Hub Subsystem Registry.
   app.setGlobalPrefix('api', {
-    exclude: [{ path: 'auth/callback', method: RequestMethod.GET }],
+    exclude: [
+      { path: 'auth/login', method: RequestMethod.GET },
+      { path: 'auth/callback', method: RequestMethod.GET },
+      { path: 'auth/logout', method: RequestMethod.POST },
+    ],
   });
 
   app.enableCors({

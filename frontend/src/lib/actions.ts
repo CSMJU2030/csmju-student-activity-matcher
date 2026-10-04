@@ -1,21 +1,10 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { ACCESS_TOKEN_KEY, apiSend, fetchJsonWithAuth, toQuery } from "./api/apiClient";
+import { apiSend, fetchJsonWithAuth, toQuery } from "./api/apiClient";
 
 // Every write below acts as the logged-in student: the backend resolves who
 // that is from the Core Hub token, so the `studentId` arguments only pick the
 // profile URL and are re-checked server-side (students can only edit themselves).
-
-export async function setTokenCookie(token: string) {
-  const cookieStore = await cookies();
-  cookieStore.set(ACCESS_TOKEN_KEY, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/" });
-}
-
-export async function clearTokenCookie() {
-  const cookieStore = await cookies();
-  cookieStore.delete(ACCESS_TOKEN_KEY);
-}
 
 /**
  * After any write, drop the cached render of EVERY page (student and admin):

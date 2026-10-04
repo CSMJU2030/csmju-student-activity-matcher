@@ -18,6 +18,8 @@ export class MeController {
       email: user.email,
       coreRole: user.coreRole,
       subsystemRole: user.subsystemRole,
+      // lets the frontend renew (silent re-SSO) before the token runs out - auth-contract §5
+      session: { expiresAt: user.expiresAt ?? null },
     };
   }
 }

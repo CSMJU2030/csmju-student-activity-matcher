@@ -251,14 +251,16 @@ describe('Demo Subsystem (e2e)', () => {
           id: STAFF_CORE_ID,
           email: 'staff@core.local',
           coreRole: 'staff',
-          subsystemRole: 'STAFF',
+          // Core Hub staff are admins in this subsystem (role-mapping.ts)
+          subsystemRole: 'ADMIN',
+          session: { expiresAt: expect.any(String) },
         },
       });
     });
 
     it.each([
       ['student', 'STUDENT'],
-      ['staff', 'STAFF'],
+      ['staff', 'ADMIN'],
       ['admin', 'ADMIN'],
       ['alumni', 'ALUMNI'],
     ])('maps core role %s to subsystem role %s', async (coreRole, subsystemRole) => {
@@ -542,7 +544,7 @@ describe('Demo Subsystem (e2e)', () => {
         .set(bearer(rotatedToken))
         .expect(200);
 
-      expect(response.body.data.subsystemRole).toBe('STAFF');
+      expect(response.body.data.subsystemRole).toBe('ADMIN');
     });
   });
 
@@ -567,7 +569,8 @@ describe('Demo Subsystem (e2e)', () => {
         id: STAFF_CORE_ID,
         email: 'staff@core.local',
         coreRole: 'staff',
-        subsystemRole: 'STAFF',
+        subsystemRole: 'ADMIN',
+        session: { expiresAt: expect.any(String) },
       });
 
       // Step 5: business API with the same Core Hub token.

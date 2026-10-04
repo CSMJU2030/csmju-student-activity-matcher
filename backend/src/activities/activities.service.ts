@@ -41,7 +41,7 @@ export class ActivitiesService {
     };
   }
 
-  async findAll(query: QueryActivitiesDto = {}) {
+  async findAll(query: Partial<QueryActivitiesDto> = {}) {
     const q = query.search?.trim();
     const where: Prisma.ActivityWhereInput = {
       ...(q && {
@@ -53,12 +53,19 @@ export class ActivitiesService {
       }),
       ...(query.upcoming && { date: { gte: today() } }),
     };
-    const activities = await this.prisma.activity.findMany({
-      where,
-      include: ACTIVITY_INCLUDE,
-      orderBy: query.upcoming ? [{ date: 'asc' }, { time: 'asc' }] : { createdAt: 'desc' },
-    });
-    return activities.map((a) => this.mapActivity(a));
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const [activities, total] = await Promise.all([
+      this.prisma.activity.findMany({
+        where,
+        include: ACTIVITY_INCLUDE,
+        orderBy: query.upcoming ? [{ date: 'asc' }, { time: 'asc' }] : { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.activity.count({ where }),
+    ]);
+    return { items: activities.map((a) => this.mapActivity(a)), total, page, limit };
   }
 
   async findOne(id: string) {

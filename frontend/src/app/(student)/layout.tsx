@@ -107,7 +107,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
                         </div>
                     </div>
                     <button
-                        onClick={() => { logout(); router.push("/login"); }}
+                        onClick={logout}
                         className="w-full mt-2 px-4 py-2 text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-lg transition-colors text-left"
                     >
                         🚪 ออกจากระบบ
@@ -127,7 +127,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
                     <div className="flex items-center gap-2">
                         <NotificationBell unread={unread.notifications} onChange={refreshUnread} align="right" />
                         <button
-                            onClick={() => { logout(); router.push("/login"); }}
+                            onClick={logout}
                             className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-sm"
                         >
                             🚪

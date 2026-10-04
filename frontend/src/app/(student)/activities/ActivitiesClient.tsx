@@ -18,7 +18,7 @@ interface ActivitiesClientProps {
 }
 
 export function ActivitiesClient({ allStudents, allActivities, allInterests, error }: ActivitiesClientProps) {
-    const { user, token } = useAuth();
+    const { user } = useAuth();
     const router = useRouter();
     const currentStudent = user?.studentId ? allStudents.find(s => s.studentId === String(user.studentId) || s.id === String(user.studentId)) : null;
     const [search, setSearch] = useState("");
@@ -32,7 +32,7 @@ export function ActivitiesClient({ allStudents, allActivities, allInterests, err
     }, [allActivities, search]);
 
     const handleJoinLeave = async (activityId: string, isJoined: boolean) => {
-        if (!currentStudent || !token) { alert("กรุณาเข้าสู่ระบบก่อน"); return; }
+        if (!currentStudent) { alert("กรุณาเข้าสู่ระบบก่อน"); return; }
         try {
             if (isJoined) {
                 await leaveActivityFn(activityId);

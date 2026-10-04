@@ -19,7 +19,7 @@ interface ActivityClientProps {
 }
 
 export function ActivityDetailClient({ activity, allStudents, allInterests }: ActivityClientProps) {
-    const { user, token } = useAuth();
+    const { user } = useAuth();
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
 
@@ -49,7 +49,7 @@ export function ActivityDetailClient({ activity, allStudents, allInterests }: Ac
     };
 
     const handleJoinLeave = async () => {
-        if (!currentStudent || !token) return;
+        if (!currentStudent) return;
         startTransition(async () => {
             try {
                 if (isJoined) {

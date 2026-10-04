@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import { CoreHubIdentity } from '../auth/core-hub-identity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { RequirePermissions } from '../auth/decorators/require-permissions.decorator';
@@ -34,7 +34,7 @@ export class GroupsController {
 
   @Get(':id')
   @RequirePermissions(Permission.GROUP_READ_ANY)
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.groupsService.findOne(id);
   }
 
@@ -47,28 +47,28 @@ export class GroupsController {
 
   @Patch(':id')
   @RequirePermissions(Permission.GROUP_UPDATE_OWN, Permission.GROUP_UPDATE_ANY)
-  async update(@CurrentUser() user: CoreHubIdentity, @Param('id') id: string, @Body() body: UpdateGroupDto) {
+  async update(@CurrentUser() user: CoreHubIdentity, @Param('id', ParseUUIDPipe) id: string, @Body() body: UpdateGroupDto) {
     await this.assertCanManage(user, id);
     return this.groupsService.update(id, body);
   }
 
   @Delete(':id')
   @RequirePermissions(Permission.GROUP_DELETE_OWN, Permission.GROUP_DELETE_ANY)
-  async remove(@CurrentUser() user: CoreHubIdentity, @Param('id') id: string) {
+  async remove(@CurrentUser() user: CoreHubIdentity, @Param('id', ParseUUIDPipe) id: string) {
     await this.assertCanManage(user, id);
     return this.groupsService.remove(id, await this.currentStudent.actor(user));
   }
 
   @Post(':id/join')
   @RequirePermissions(Permission.GROUP_UPDATE_OWN)
-  async joinGroup(@CurrentUser() user: CoreHubIdentity, @Param('id') id: string) {
+  async joinGroup(@CurrentUser() user: CoreHubIdentity, @Param('id', ParseUUIDPipe) id: string) {
     const me = await this.currentStudent.require(user);
     return this.groupsService.joinGroup(me.id, id);
   }
 
   @Delete(':id/leave')
   @RequirePermissions(Permission.GROUP_UPDATE_OWN)
-  async leaveGroup(@CurrentUser() user: CoreHubIdentity, @Param('id') id: string) {
+  async leaveGroup(@CurrentUser() user: CoreHubIdentity, @Param('id', ParseUUIDPipe) id: string) {
     const me = await this.currentStudent.require(user);
     return this.groupsService.leaveGroup(me.id, id);
   }
@@ -77,8 +77,8 @@ export class GroupsController {
   @RequirePermissions(Permission.GROUP_UPDATE_OWN, Permission.GROUP_UPDATE_ANY)
   async removeMember(
     @CurrentUser() user: CoreHubIdentity,
-    @Param('id') id: string,
-    @Param('studentId') studentId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('studentId', ParseUUIDPipe) studentId: string,
   ) {
     await this.assertCanManage(user, id);
     return this.groupsService.removeMember(id, studentId, await this.currentStudent.actor(user));
