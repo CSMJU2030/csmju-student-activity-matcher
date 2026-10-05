@@ -8,6 +8,7 @@ import { getInitials } from "@/lib/utils";
 import { getUnreadCounts } from "@/lib/api/social";
 import { NotificationBell } from "@/components/NotificationBell";
 import { Icon, type IconName } from "@/components/Icon";
+import { PortalLink } from "@/components/PortalLink";
 
 const NAV_ITEMS: { href: string; label: string; icon: IconName }[] = [
     { href: "/dashboard", label: "ภาพรวม", icon: "dashboard" },
@@ -79,6 +80,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
                             <p className="text-xs text-muted-foreground">ค้นหาเพื่อนที่ใช่</p>
                         </div>
                     </Link>
+                    <PortalLink className="mt-4" />
                 </div>
 
                 {/* The menu scrolls on its own so sign-out below stays on screen. */}
