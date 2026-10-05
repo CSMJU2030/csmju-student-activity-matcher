@@ -1,8 +1,0 @@
-git commit --amend
-fix
-fix(ci): lock pnpm file correctly without frozen-lockfile (ARC-02)
-fix: decouple frontend from prisma
-refactor(student-activity-matcher): decouple frontend from prisma
-ci(student-activity-matcher): pin compliance entry at v1.5.2 so the team bumps standards itself (#2)
-chore(student-activity-matcher): pin standards submodule at v1.0.0
-chore(student-activity-matcher): scaffold csmju-student-activity-matcher from standards v1.0.0
