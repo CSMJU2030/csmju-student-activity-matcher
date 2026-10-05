@@ -56,7 +56,6 @@ export function CreateActivityClient({
                 interestIds: selectedInterests,
             });
 
-            alert("สร้างกิจกรรมสำเร็จ!");
             router.push(`/activities/${result.id}`);
             router.refresh();
         } catch (err: any) {

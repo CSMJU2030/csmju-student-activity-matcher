@@ -8,6 +8,7 @@ import { InterestWithCategory } from "@/lib/data/interests";
 import { joinGroup, leaveGroup } from "@/lib/actions";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+import { Notice } from "@/components/Notice";
 
 interface GroupsClientProps {
     allStudents: StudentData[];
@@ -28,16 +29,21 @@ export function GroupsClient({ allStudents, allGroups, allInterests }: GroupsCli
         );
     }, [allGroups, search]);
 
+    const [notice, setNotice] = useState<string | null>(null);
+
     const handleJoinLeave = async (groupId: string, isMember: boolean) => {
-        if (!currentStudent) { alert("กรุณาเข้าสู่ระบบก่อน"); return; }
+        if (!currentStudent) { setNotice("กรุณาเข้าสู่ระบบก่อน"); return; }
+        setNotice(null);
         const result = isMember
             ? await leaveGroup(currentStudent.id, groupId)
             : await joinGroup(currentStudent.id, groupId);
-        if (!result.success) alert(result.error);
+        if (!result.success) setNotice(result.error ?? "ไม่สามารถดำเนินการได้ กรุณาลองอีกครั้ง");
     };
 
     return (
         <div className="max-w-6xl mx-auto space-y-6">
+            <Notice message={notice} onClose={() => setNotice(null)} />
+
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
                     <h1 className="text-2xl font-bold inline-flex items-center gap-2"><Icon name="users" className="h-6 w-6 text-primary" /> กลุ่ม</h1>
@@ -69,7 +75,7 @@ export function GroupsClient({ allStudents, allGroups, allInterests }: GroupsCli
                                 <Icon name="users" className="h-10 w-10 text-white" />
                             </div>
                             <div className="p-5">
-                                <div className="font-semibold text-lg">{group.name}</div>
+                                <Link href={`/groups/${group.id}`} className="block font-semibold text-lg hover:text-primary rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">{group.name}</Link>
                                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{group.description}</p>
                                 <div className="flex flex-wrap gap-1.5 mt-3">
                                     {interests.map((i) => (
