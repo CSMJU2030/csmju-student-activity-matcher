@@ -1,0 +1,400 @@
+// ============================================================
+// Interest Match - Mock Data
+// Single source of truth for all mock data in V1
+// ============================================================
+
+import { InterestCategory, Interest, LookingForOption, Student, Group, Activity } from "@/types";
+
+// ── Interest Categories ──────────────────────────────────────
+export const INTEREST_CATEGORIES: InterestCategory[] = [
+  { id: "cat-gaming", name: "Gaming", icon: "🎮", color: "bg-secondary text-primary border-primary/20" },
+  { id: "cat-sports", name: "Sports", icon: "⚽", color: "bg-secondary text-primary border-primary/20" },
+  { id: "cat-tech", name: "Technology", icon: "💻", color: "bg-secondary text-primary border-primary/20" },
+  { id: "cat-entertainment", name: "Entertainment", icon: "🎬", color: "bg-secondary text-primary border-primary/20" },
+  { id: "cat-hobbies", name: "Hobbies", icon: "🎨", color: "bg-amber-100 text-amber-700 border-amber-200" },
+  { id: "cat-academic", name: "Academic", icon: "📚", color: "bg-secondary text-primary border-primary/20" },
+];
+
+// ── Interests ────────────────────────────────────────────────
+export const INTERESTS: Interest[] = [
+  // Gaming
+  { id: "int-valorant", name: "Valorant", categoryId: "cat-gaming", icon: "🎮" },
+  { id: "int-minecraft", name: "Minecraft", categoryId: "cat-gaming", icon: "⛏️" },
+  { id: "int-roblox", name: "Roblox", categoryId: "cat-gaming", icon: "🧱" },
+  { id: "int-pubg", name: "PUBG", categoryId: "cat-gaming", icon: "🔫" },
+  { id: "int-lol", name: "League of Legends", categoryId: "cat-gaming", icon: "⚔️" },
+  { id: "int-genshin", name: "Genshin Impact", categoryId: "cat-gaming", icon: "✨" },
+  { id: "int-rov", name: "ROV", categoryId: "cat-gaming", icon: "🏰" },
+  // Sports
+  { id: "int-badminton", name: "Badminton", categoryId: "cat-sports", icon: "🏸" },
+  { id: "int-football", name: "Football", categoryId: "cat-sports", icon: "⚽" },
+  { id: "int-basketball", name: "Basketball", categoryId: "cat-sports", icon: "🏀" },
+  { id: "int-volleyball", name: "Volleyball", categoryId: "cat-sports", icon: "🏐" },
+  { id: "int-running", name: "Running", categoryId: "cat-sports", icon: "🏃" },
+  { id: "int-fitness", name: "Fitness", categoryId: "cat-sports", icon: "💪" },
+  { id: "int-swimming", name: "Swimming", categoryId: "cat-sports", icon: "🏊" },
+  // Technology
+  { id: "int-programming", name: "Programming", categoryId: "cat-tech", icon: "👨‍💻" },
+  { id: "int-webdev", name: "Web Development", categoryId: "cat-tech", icon: "🌐" },
+  { id: "int-ai", name: "AI / Machine Learning", categoryId: "cat-tech", icon: "🤖" },
+  { id: "int-cybersecurity", name: "Cybersecurity", categoryId: "cat-tech", icon: "🔒" },
+  { id: "int-gamedev", name: "Game Development", categoryId: "cat-tech", icon: "🕹️" },
+  { id: "int-mobile", name: "Mobile Development", categoryId: "cat-tech", icon: "📱" },
+  { id: "int-data", name: "Data Science", categoryId: "cat-tech", icon: "📊" },
+  // Entertainment
+  { id: "int-anime", name: "Anime", categoryId: "cat-entertainment", icon: "🎌" },
+  { id: "int-movies", name: "Movies", categoryId: "cat-entertainment", icon: "🎬" },
+  { id: "int-series", name: "Series", categoryId: "cat-entertainment", icon: "📺" },
+  { id: "int-music", name: "Music", categoryId: "cat-entertainment", icon: "🎵" },
+  { id: "int-kpop", name: "K-Pop", categoryId: "cat-entertainment", icon: "🎤" },
+  { id: "int-jpop", name: "J-Pop", categoryId: "cat-entertainment", icon: "🇯🇵" },
+  // Hobbies
+  { id: "int-photography", name: "Photography", categoryId: "cat-hobbies", icon: "📷" },
+  { id: "int-drawing", name: "Drawing", categoryId: "cat-hobbies", icon: "✏️" },
+  { id: "int-reading", name: "Reading", categoryId: "cat-hobbies", icon: "📖" },
+  { id: "int-cooking", name: "Cooking", categoryId: "cat-hobbies", icon: "🍳" },
+  { id: "int-traveling", name: "Traveling", categoryId: "cat-hobbies", icon: "✈️" },
+  { id: "int-crafts", name: "Arts & Crafts", categoryId: "cat-hobbies", icon: "🎨" },
+  // Academic
+  { id: "int-math", name: "Mathematics", categoryId: "cat-academic", icon: "📐" },
+  { id: "int-english", name: "English", categoryId: "cat-academic", icon: "🔤" },
+  { id: "int-research", name: "Research", categoryId: "cat-academic", icon: "🔬" },
+];
+
+// ── Looking For Options ──────────────────────────────────────
+export const LOOKING_FOR_OPTIONS: LookingForOption[] = [
+  { id: "lf-gaming", label: "หาเพื่อนเล่นเกม", icon: "🎮" },
+  { id: "lf-sports", label: "หาเพื่อนเล่นกีฬา", icon: "⚽" },
+  { id: "lf-study", label: "หาเพื่อนเรียน", icon: "📚" },
+  { id: "lf-project", label: "หาเพื่อนทำ Project", icon: "💻" },
+  { id: "lf-activity", label: "หาเพื่อนทำกิจกรรม", icon: "🎉" },
+  { id: "lf-chat", label: "หาเพื่อนคุย", icon: "💬" },
+  { id: "lf-other", label: "อื่น ๆ", icon: "✨" },
+];
+
+// ── Mock Students ────────────────────────────────────────────
+export const STUDENTS: Student[] = [
+  {
+    id: "s1", studentId: "65011001", name: "Somchai Jaidee", email: "somchai@example.com",
+    avatar: "", faculty: "คณะวิทยาศาสตร์", program: "วิทยาการคอมพิวเตอร์", year: 3,
+    bio: "ชอบเล่นเกมและเขียนโปรแกรม อยากหาเพื่อนเล่น Valorant",
+    interestIds: ["int-valorant", "int-programming", "int-anime", "int-badminton", "int-webdev", "int-minecraft", "int-movies", "int-ai"],
+    lookingForIds: ["lf-gaming", "lf-project", "lf-sports"],
+    groupIds: ["g1", "g3", "g5"], activityIds: ["a1", "a3"], createdAt: "2026-01-15",
+  },
+  {
+    id: "s2", studentId: "65011002", name: "Suda Wongsakul", email: "suda@example.com",
+    avatar: "", faculty: "คณะวิทยาศาสตร์", program: "วิทยาการคอมพิวเตอร์", year: 3,
+    bio: "สนใจ AI และ Data Science อยากหากลุ่มเรียนรู้ร่วมกัน",
+    interestIds: ["int-ai", "int-programming", "int-data", "int-reading", "int-anime", "int-kpop"],
+    lookingForIds: ["lf-study", "lf-project", "lf-chat"],
+    groupIds: ["g3", "g5"], activityIds: ["a2", "a5"], createdAt: "2026-01-16",
+  },
+  {
+    id: "s3", studentId: "65011003", name: "Anan Techapat", email: "anan@example.com",
+    avatar: "", faculty: "คณะวิศวกรรมศาสตร์", program: "วิศวกรรมคอมพิวเตอร์", year: 2,
+    bio: "Fullstack developer ตัวยง ชอบทำ side project",
+    interestIds: ["int-webdev", "int-programming", "int-mobile", "int-valorant", "int-fitness", "int-photography"],
+    lookingForIds: ["lf-project", "lf-gaming"],
+    groupIds: ["g1", "g3"], activityIds: ["a1", "a4"], createdAt: "2026-02-01",
+  },
+  {
+    id: "s4", studentId: "65011004", name: "Ploy Srisuwan", email: "ploy@example.com",
+    avatar: "", faculty: "คณะศิลปศาสตร์", program: "นิเทศศาสตร์", year: 2,
+    bio: "ชอบถ่ายรูปและวาดรูป ดูอนิเมะเป็นชีวิตจิตใจ",
+    interestIds: ["int-photography", "int-drawing", "int-anime", "int-kpop", "int-movies", "int-traveling"],
+    lookingForIds: ["lf-activity", "lf-chat"],
+    groupIds: ["g5", "g6"], activityIds: ["a5", "a7"], createdAt: "2026-02-10",
+  },
+  {
+    id: "s5", studentId: "65011005", name: "Krit Namwong", email: "krit@example.com",
+    avatar: "", faculty: "คณะวิทยาศาสตร์", program: "วิทยาการคอมพิวเตอร์", year: 4,
+    bio: "กำลังทำโปรเจกต์จบเกี่ยวกับ Game Development",
+    interestIds: ["int-gamedev", "int-programming", "int-valorant", "int-lol", "int-anime", "int-genshin", "int-ai"],
+    lookingForIds: ["lf-gaming", "lf-project"],
+    groupIds: ["g1", "g2", "g3"], activityIds: ["a1", "a3"], createdAt: "2026-01-20",
+  },
+  {
+    id: "s6", studentId: "65011006", name: "Napat Kaewsri", email: "napat@example.com",
+    avatar: "", faculty: "คณะวิศวกรรมศาสตร์", program: "วิศวกรรมไฟฟ้า", year: 3,
+    bio: "ชอบเล่นกีฬา โดยเฉพาะแบดมินตันกับบาส",
+    interestIds: ["int-badminton", "int-basketball", "int-fitness", "int-running", "int-football", "int-music"],
+    lookingForIds: ["lf-sports", "lf-activity"],
+    groupIds: ["g4", "g7"], activityIds: ["a2", "a6", "a8"], createdAt: "2026-02-05",
+  },
+  {
+    id: "s7", studentId: "65011007", name: "Fah Rungroj", email: "fah@example.com",
+    avatar: "", faculty: "คณะบริหารธุรกิจ", program: "การตลาด", year: 2,
+    bio: "สนใจ K-Pop และชอบทำอาหาร ตามหาเพื่อนที่ชอบเหมือนกัน",
+    interestIds: ["int-kpop", "int-cooking", "int-music", "int-series", "int-traveling", "int-photography"],
+    lookingForIds: ["lf-activity", "lf-chat"],
+    groupIds: ["g6", "g8"], activityIds: ["a5", "a7", "a9"], createdAt: "2026-02-15",
+  },
+  {
+    id: "s8", studentId: "65011008", name: "Top Pattana", email: "top@example.com",
+    avatar: "", faculty: "คณะเทคโนโลยีสารสนเทศ", program: "วิศวกรรมซอฟต์แวร์", year: 3,
+    bio: "Cybersecurity enthusiast ชอบ CTF competitions",
+    interestIds: ["int-cybersecurity", "int-programming", "int-webdev", "int-lol", "int-valorant"],
+    lookingForIds: ["lf-project", "lf-gaming", "lf-study"],
+    groupIds: ["g1", "g3", "g9"], activityIds: ["a1", "a4"], createdAt: "2026-01-25",
+  },
+  {
+    id: "s9", studentId: "65011009", name: "Mint Charoenrat", email: "mint@example.com",
+    avatar: "", faculty: "คณะวิทยาศาสตร์", program: "คณิตศาสตร์", year: 2,
+    bio: "ชอบคณิตศาสตร์และเล่นกีฬา",
+    interestIds: ["int-math", "int-volleyball", "int-badminton", "int-reading", "int-music", "int-running"],
+    lookingForIds: ["lf-study", "lf-sports"],
+    groupIds: ["g4", "g10"], activityIds: ["a2", "a6"], createdAt: "2026-03-01",
+  },
+  {
+    id: "s10", studentId: "65011010", name: "Bank Sukjai", email: "bank@example.com",
+    avatar: "", faculty: "คณะวิศวกรรมศาสตร์", program: "วิศวกรรมคอมพิวเตอร์", year: 4,
+    bio: "สนใจ AI และ Machine Learning อยากทำ startup",
+    interestIds: ["int-ai", "int-programming", "int-data", "int-webdev", "int-fitness", "int-english"],
+    lookingForIds: ["lf-project", "lf-study"],
+    groupIds: ["g3", "g5"], activityIds: ["a3", "a4", "a10"], createdAt: "2026-01-18",
+  },
+  {
+    id: "s11", studentId: "65011011", name: "Pim Wattana", email: "pim@example.com",
+    avatar: "", faculty: "คณะศิลปศาสตร์", program: "ภาษาอังกฤษ", year: 1,
+    bio: "ชอบดูหนังและซีรีส์ อ่านหนังสือเยอะมาก",
+    interestIds: ["int-movies", "int-series", "int-reading", "int-english", "int-music", "int-kpop"],
+    lookingForIds: ["lf-chat", "lf-activity"],
+    groupIds: ["g6", "g8"], activityIds: ["a7", "a9"], createdAt: "2026-03-10",
+  },
+  {
+    id: "s12", studentId: "65011012", name: "Bright Chaiya", email: "bright@example.com",
+    avatar: "", faculty: "คณะเทคโนโลยีสารสนเทศ", program: "เทคโนโลยีสารสนเทศ", year: 2,
+    bio: "Gamer หลายแนว ชอบ Minecraft กับ Genshin",
+    interestIds: ["int-minecraft", "int-genshin", "int-rov", "int-anime", "int-drawing", "int-gamedev"],
+    lookingForIds: ["lf-gaming", "lf-chat"],
+    groupIds: ["g2", "g5"], activityIds: ["a1", "a3"], createdAt: "2026-02-20",
+  },
+  {
+    id: "s13", studentId: "65011013", name: "Earn Singsri", email: "earn@example.com",
+    avatar: "", faculty: "คณะบริหารธุรกิจ", program: "การเงิน", year: 3,
+    bio: "ชอบวิ่งกับออกกำลังกาย สนใจการลงทุน",
+    interestIds: ["int-running", "int-fitness", "int-swimming", "int-reading", "int-traveling"],
+    lookingForIds: ["lf-sports", "lf-activity"],
+    groupIds: ["g4", "g7"], activityIds: ["a6", "a8"], createdAt: "2026-02-25",
+  },
+  {
+    id: "s14", studentId: "65011014", name: "Film Prasert", email: "film@example.com",
+    avatar: "", faculty: "คณะวิทยาศาสตร์", program: "ฟิสิกส์", year: 1,
+    bio: "สนใจดาราศาสตร์และฟิสิกส์ เล่น Valorant เก่ง",
+    interestIds: ["int-valorant", "int-pubg", "int-research", "int-math", "int-anime", "int-photography"],
+    lookingForIds: ["lf-gaming", "lf-study"],
+    groupIds: ["g1", "g10"], activityIds: ["a1"], createdAt: "2026-03-05",
+  },
+  {
+    id: "s15", studentId: "65011015", name: "Pang Jitsupa", email: "pang@example.com",
+    avatar: "", faculty: "คณะสถาปัตยกรรมศาสตร์", program: "ออกแบบภายใน", year: 2,
+    bio: "ชอบวาดรูปและถ่ายรูป สนใจงานออกแบบ",
+    interestIds: ["int-drawing", "int-photography", "int-crafts", "int-traveling", "int-movies", "int-cooking"],
+    lookingForIds: ["lf-activity", "lf-chat"],
+    groupIds: ["g6"], activityIds: ["a7", "a9"], createdAt: "2026-02-28",
+  },
+  {
+    id: "s16", studentId: "65011016", name: "Gun Wichit", email: "gun@example.com",
+    avatar: "", faculty: "คณะวิศวกรรมศาสตร์", program: "วิศวกรรมเครื่องกล", year: 3,
+    bio: "Football lover ชอบดูพรีเมียร์ลีก",
+    interestIds: ["int-football", "int-basketball", "int-fitness", "int-movies", "int-pubg", "int-rov"],
+    lookingForIds: ["lf-sports", "lf-gaming"],
+    groupIds: ["g4", "g7"], activityIds: ["a2", "a6", "a8"], createdAt: "2026-01-22",
+  },
+  {
+    id: "s17", studentId: "65011017", name: "Ice Thanaporn", email: "ice@example.com",
+    avatar: "", faculty: "คณะเศรษฐศาสตร์", program: "เศรษฐศาสตร์", year: 1,
+    bio: "ชอบฟังเพลงและดูอนิเมะ สนใจเศรษฐศาสตร์พฤติกรรม",
+    interestIds: ["int-music", "int-jpop", "int-anime", "int-series", "int-reading", "int-cooking"],
+    lookingForIds: ["lf-chat", "lf-study"],
+    groupIds: ["g5", "g8"], activityIds: ["a5", "a9"], createdAt: "2026-03-15",
+  },
+  {
+    id: "s18", studentId: "65011018", name: "Peem Rattana", email: "peem@example.com",
+    avatar: "", faculty: "คณะเทคโนโลยีสารสนเทศ", program: "ระบบสารสนเทศ", year: 2,
+    bio: "Web developer ที่ชอบทำเว็บสวย ๆ",
+    interestIds: ["int-webdev", "int-programming", "int-mobile", "int-photography", "int-music", "int-lol"],
+    lookingForIds: ["lf-project", "lf-gaming"],
+    groupIds: ["g3", "g9"], activityIds: ["a4", "a10"], createdAt: "2026-02-12",
+  },
+  {
+    id: "s19", studentId: "65011019", name: "Nan Sriphan", email: "nan@example.com",
+    avatar: "", faculty: "คณะวิทยาศาสตร์", program: "ชีววิทยา", year: 3,
+    bio: "ชอบเล่นแบดมินตันและวอลเลย์บอล",
+    interestIds: ["int-badminton", "int-volleyball", "int-swimming", "int-cooking", "int-traveling", "int-research"],
+    lookingForIds: ["lf-sports", "lf-activity"],
+    groupIds: ["g4", "g7"], activityIds: ["a2", "a6"], createdAt: "2026-02-08",
+  },
+  {
+    id: "s20", studentId: "65011020", name: "Mark Sutthi", email: "mark@example.com",
+    avatar: "", faculty: "คณะวิศวกรรมศาสตร์", program: "วิศวกรรมโยธา", year: 4,
+    bio: "ชอบ PUBG กับ ROV เล่นบาสตอนเย็น",
+    interestIds: ["int-pubg", "int-rov", "int-basketball", "int-fitness", "int-movies", "int-music"],
+    lookingForIds: ["lf-gaming", "lf-sports"],
+    groupIds: ["g2", "g7"], activityIds: ["a1", "a8"], createdAt: "2026-01-28",
+  },
+  {
+    id: "s21", studentId: "65011021", name: "Oat Mongkol", email: "oat@example.com",
+    avatar: "", faculty: "คณะบริหารธุรกิจ", program: "การจัดการ", year: 2,
+    bio: "สนใจ startup และ fintech",
+    interestIds: ["int-programming", "int-webdev", "int-reading", "int-english", "int-traveling"],
+    lookingForIds: ["lf-project", "lf-study"],
+    groupIds: ["g3", "g9"], activityIds: ["a4", "a10"], createdAt: "2026-03-02",
+  },
+  {
+    id: "s22", studentId: "65011022", name: "View Chantra", email: "view@example.com",
+    avatar: "", faculty: "คณะศิลปศาสตร์", program: "ภาษาจีน", year: 1,
+    bio: "ชอบ K-Pop เป็นชีวิตจิตใจ ฝึกเต้น cover",
+    interestIds: ["int-kpop", "int-music", "int-movies", "int-cooking", "int-drawing", "int-series"],
+    lookingForIds: ["lf-activity", "lf-chat"],
+    groupIds: ["g6", "g8"], activityIds: ["a5", "a7"], createdAt: "2026-03-08",
+  },
+  {
+    id: "s23", studentId: "65011023", name: "Palm Chanakan", email: "palm@example.com",
+    avatar: "", faculty: "คณะเทคโนโลยีสารสนเทศ", program: "วิศวกรรมซอฟต์แวร์", year: 3,
+    bio: "Fullstack dev ชอบ open source",
+    interestIds: ["int-programming", "int-webdev", "int-cybersecurity", "int-gamedev", "int-valorant", "int-lol", "int-ai"],
+    lookingForIds: ["lf-project", "lf-gaming", "lf-study"],
+    groupIds: ["g1", "g3", "g9"], activityIds: ["a1", "a3", "a4"], createdAt: "2026-01-30",
+  },
+  {
+    id: "s24", studentId: "65011024", name: "Namfon Detphan", email: "namfon@example.com",
+    avatar: "", faculty: "คณะวิทยาศาสตร์", program: "เคมี", year: 2,
+    bio: "ชอบทำอาหารและทำขนม อ่านหนังสือเยอะ",
+    interestIds: ["int-cooking", "int-reading", "int-crafts", "int-research", "int-music", "int-traveling"],
+    lookingForIds: ["lf-activity", "lf-chat"],
+    groupIds: ["g8", "g10"], activityIds: ["a9"], createdAt: "2026-03-12",
+  },
+  {
+    id: "s25", studentId: "65011025", name: "Tor Sutthisak", email: "tor@example.com",
+    avatar: "", faculty: "คณะวิศวกรรมศาสตร์", program: "วิศวกรรมคอมพิวเตอร์", year: 1,
+    bio: "น้องใหม่สาย Tech ชอบ Minecraft",
+    interestIds: ["int-minecraft", "int-gamedev", "int-programming", "int-anime", "int-genshin", "int-roblox"],
+    lookingForIds: ["lf-gaming", "lf-project"],
+    groupIds: ["g2", "g5"], activityIds: ["a3"], createdAt: "2026-03-18",
+  },
+  {
+    id: "s26", studentId: "65011026", name: "Bee Wanida", email: "bee@example.com",
+    avatar: "", faculty: "คณะบริหารธุรกิจ", program: "บัญชี", year: 3,
+    bio: "ชอบเล่น Genshin และดู anime",
+    interestIds: ["int-genshin", "int-anime", "int-kpop", "int-series", "int-cooking", "int-photography"],
+    lookingForIds: ["lf-gaming", "lf-chat"],
+    groupIds: ["g5", "g6"], activityIds: ["a5", "a7"], createdAt: "2026-02-18",
+  },
+  {
+    id: "s27", studentId: "65011027", name: "Win Mongkhon", email: "win@example.com",
+    avatar: "", faculty: "คณะเศรษฐศาสตร์", program: "เศรษฐศาสตร์ระหว่างประเทศ", year: 2,
+    bio: "ชอบฟุตบอลและวิ่ง สนใจเศรษฐศาสตร์การกีฬา",
+    interestIds: ["int-football", "int-running", "int-basketball", "int-reading", "int-english", "int-movies"],
+    lookingForIds: ["lf-sports", "lf-study"],
+    groupIds: ["g4", "g7"], activityIds: ["a2", "a6", "a8"], createdAt: "2026-02-22",
+  },
+  {
+    id: "s28", studentId: "65011028", name: "June Arunee", email: "june@example.com",
+    avatar: "", faculty: "คณะสถาปัตยกรรมศาสตร์", program: "สถาปัตยกรรม", year: 3,
+    bio: "ชอบถ่ายรูปอาคารสวย ๆ และเดินทาง",
+    interestIds: ["int-photography", "int-traveling", "int-drawing", "int-crafts", "int-movies", "int-music"],
+    lookingForIds: ["lf-activity", "lf-chat"],
+    groupIds: ["g6"], activityIds: ["a7", "a9"], createdAt: "2026-02-14",
+  },
+  {
+    id: "s29", studentId: "65011029", name: "Pop Kittisak", email: "pop@example.com",
+    avatar: "", faculty: "คณะเทคโนโลยีสารสนเทศ", program: "เทคโนโลยีสารสนเทศ", year: 4,
+    bio: "Data Engineer สนใจ Big Data และ Cloud",
+    interestIds: ["int-data", "int-programming", "int-ai", "int-cybersecurity", "int-fitness", "int-running"],
+    lookingForIds: ["lf-project", "lf-study", "lf-sports"],
+    groupIds: ["g3", "g9"], activityIds: ["a4", "a10"], createdAt: "2026-01-12",
+  },
+  {
+    id: "s30", studentId: "65011030", name: "Mild Siriporn", email: "mild@example.com",
+    avatar: "", faculty: "คณะศิลปศาสตร์", program: "ภาษาไทย", year: 1,
+    bio: "ชอบอ่านหนังสือและเขียนเรื่องสั้น ดู Netflix",
+    interestIds: ["int-reading", "int-series", "int-movies", "int-music", "int-jpop", "int-drawing"],
+    lookingForIds: ["lf-chat", "lf-activity"],
+    groupIds: ["g8", "g10"], activityIds: ["a9"], createdAt: "2026-03-20",
+  },
+];
+
+// ── Mock Groups ──────────────────────────────────────────────
+export const GROUPS: Group[] = [
+  {
+    id: "g1", name: "Valorant MJU",
+    description: "ชุมชนคนเล่น Valorant ของมหาวิทยาลัย มาเล่นด้วยกัน rank ไหนก็ได้ มาสนุกกัน!",
+    coverImage: "", interestIds: ["int-valorant", "int-pubg"],
+    creatorId: "s1", memberIds: ["s1", "s3", "s5", "s8", "s14", "s23"],
+    createdAt: "2026-01-20",
+  },
+  {
+    id: "g2", name: "Minecraft Builders",
+    description: "สำหรับคนที่ชอบสร้างของใน Minecraft มาแชร์ผลงานและเล่นร่วมกัน",
+    coverImage: "", interestIds: ["int-minecraft", "int-roblox"],
+    creatorId: "s12", memberIds: ["s12", "s20", "s25"],
+    createdAt: "2026-02-01",
+  },
+  {
+    id: "g3", name: "Tech & Programming Hub",
+    description: "กลุ่มสำหรับคนสาย Tech พูดคุยเรื่อง Programming, AI, Web Dev และเทคโนโลยีใหม่ ๆ",
+    coverImage: "", interestIds: ["int-programming", "int-webdev", "int-ai"],
+    creatorId: "s10", memberIds: ["s1", "s2", "s3", "s5", "s8", "s10", "s18", "s21", "s23", "s29"],
+    createdAt: "2026-01-15",
+  },
+  {
+    id: "g4", name: "Sports Club MJU",
+    description: "รวมพลคนรักกีฬา! ไม่ว่าจะแบด บาส ฟุตบอล วอลเลย์ มาออกกำลังกายด้วยกัน",
+    coverImage: "", interestIds: ["int-badminton", "int-football", "int-basketball", "int-volleyball"],
+    creatorId: "s6", memberIds: ["s6", "s9", "s13", "s16", "s19", "s27"],
+    createdAt: "2026-01-25",
+  },
+  {
+    id: "g5", name: "Anime & Manga Club",
+    description: "คุยเรื่องอนิเมะ แนะนำเรื่องดี ๆ ตาม seasonal anime ร่วมกัน",
+    coverImage: "", interestIds: ["int-anime", "int-jpop"],
+    creatorId: "s1", memberIds: ["s1", "s2", "s12", "s17", "s25", "s26"],
+    createdAt: "2026-02-05",
+  },
+  {
+    id: "g6", name: "Creative Arts Society",
+    description: "ชุมชนคนรักศิลปะ ถ่ายรูป วาดรูป งานฝีมือ มาแบ่งปันผลงานด้วยกัน",
+    coverImage: "", interestIds: ["int-photography", "int-drawing", "int-crafts"],
+    creatorId: "s4", memberIds: ["s4", "s7", "s11", "s15", "s22", "s26", "s28"],
+    createdAt: "2026-02-10",
+  },
+  {
+    id: "g7", name: "Fitness & Wellness",
+    description: "กลุ่มสำหรับคนที่อยากออกกำลังกาย ชวนวิ่ง ชวนเข้ายิม มาสุขภาพดีด้วยกัน",
+    coverImage: "", interestIds: ["int-fitness", "int-running", "int-swimming"],
+    creatorId: "s13", memberIds: ["s6", "s13", "s16", "s19", "s20", "s27"],
+    createdAt: "2026-02-15",
+  },
+  {
+    id: "g8", name: "K-Pop Fan Club",
+    description: "รวมพลแฟน K-Pop! แชร์ข่าวสาร คอนเสิร์ต คัมแบ็ก พูดคุยกันทุกเรื่อง",
+    coverImage: "", interestIds: ["int-kpop", "int-music"],
+    creatorId: "s7", memberIds: ["s7", "s11", "s17", "s22", "s24", "s30"],
+    createdAt: "2026-02-20",
+  },
+  {
+    id: "g9", name: "Cybersecurity & CTF",
+    description: "กลุ่ม Cybersecurity สำหรับคนที่สนใจ Ethical Hacking และ CTF Competition",
+    coverImage: "", interestIds: ["int-cybersecurity", "int-programming"],
+    creatorId: "s8", memberIds: ["s8", "s18", "s21", "s23", "s29"],
+    createdAt: "2026-01-28",
+  },
+  {
+    id: "g10", name: "Book & Reading Circle",
+    description: "ชมรมคนรักการอ่าน แนะนำหนังสือดี ๆ อ่านแล้วมาคุยกัน",
+    coverImage: "", interestIds: ["int-reading"],
+    creatorId: "s11", memberIds: ["s9", "s11", "s24", "s30"],
+    createdAt: "2026-03-01",
+  },
+];
+
+// ── Mock Activities ──────────────────────────────────────────
+export const ACTIVITIES: Activity[] = [];
+
+// ── Mock Users (for auth) ─────────────────────────────────
+export const MOCK_USERS = [
+  { email: "student@example.com", role: "student" as const, studentId: "s1", name: "Somchai Jaidee", avatar: "" },
+  { email: "admin@example.com", role: "admin" as const, studentId: undefined, name: "Admin MIS", avatar: "" },
+];
