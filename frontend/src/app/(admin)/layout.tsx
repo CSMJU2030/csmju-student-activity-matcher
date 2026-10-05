@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { getInitials } from "@/lib/utils";
 import { Icon, type IconName } from "@/components/Icon";
+import { PortalLink } from "@/components/PortalLink";
 
 // `short` is the bottom-bar label on phones.
 const NAV_ITEMS: { href: string; label: string; short?: string; icon: IconName }[] = [
@@ -54,6 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <p className="text-xs text-muted-foreground">Interest Match</p>
                         </div>
                     </Link>
+                    <PortalLink className="mt-4" />
                 </div>
 
                 {/* The menu scrolls on its own so sign-out below stays on screen. */}

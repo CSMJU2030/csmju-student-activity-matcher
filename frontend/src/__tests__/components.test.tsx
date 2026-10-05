@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { ConfirmButton } from '@/components/ConfirmButton';
+import { PortalLink } from '@/components/PortalLink';
 import { InterestPicker } from '@/components/InterestPicker';
 import { InterestMultiSelect } from '@/components/InterestMultiSelect';
 import { InterestCategoryData, InterestWithCategory } from '@/lib/data/interests';
@@ -82,5 +83,17 @@ describe('InterestMultiSelect', () => {
 
     rerender(<InterestMultiSelect allInterests={all} value={['i-val', 'i-kpop']} onChange={onChange} max={2} />);
     expect(screen.getByRole('button', { name: /Minecraft/ })).toHaveProperty('disabled', true);
+  });
+});
+
+describe('PortalLink', () => {
+  it('links to the Core Hub web origin', () => {
+    render(<PortalLink href="http://localhost:3100" />);
+    expect(screen.getByRole('link', { name: 'กลับ CSMJU Portal' }).getAttribute('href')).toBe('http://localhost:3100');
+  });
+
+  it('renders nothing when CORE_HUB_WEB_URL is not set', () => {
+    const { container } = render(<PortalLink href="" />);
+    expect(container.firstChild).toBeNull();
   });
 });
