@@ -9,6 +9,9 @@ import type { NextConfig } from "next";
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://127.0.0.1:3002";
 
 const nextConfig: NextConfig = {
+  // Core Hub web origin for the "back to portal" link (ui-design-system.md 5.1).
+  // Read under the standard name CORE_HUB_WEB_URL; the browser sees it as NEXT_PUBLIC_*.
+  env: { NEXT_PUBLIC_CORE_HUB_WEB_URL: process.env.CORE_HUB_WEB_URL ?? "" },
   async rewrites() {
     return [
       { source: "/api/:path*", destination: `${BACKEND_URL}/api/:path*` },
