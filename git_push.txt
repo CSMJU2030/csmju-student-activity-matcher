@@ -1,2 +1,0 @@
-To https://github.com/CSMJU2030/csmju-student-activity-matcher.git
-   65794d9..6025737  feature/student-activity-matcher/decouple-frontend-from-prisma -> feature/student-activity-matcher/decouple-frontend-from-prisma
