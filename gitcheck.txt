@@ -1,0 +1,212 @@
+On branch feature/student-activity-matcher/decouple-frontend-from-prisma
+Your branch is up to date with 'origin/feature/student-activity-matcher/decouple-frontend-from-prisma'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   debug.txt
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	gitcheck.bat
+	gitcheck.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+commit cd7e98aa968d94d9ce277522ef6913eefedc9935
+Author: xhoneylemonx <peterbenjamin@outlook.co.th>
+Date:   Wed Sep 30 23:36:23 2026 +0700
+
+    fix(ci): lock pnpm file correctly without frozen-lockfile (ARC-02)
+
+ backend/prisma/schema.prisma       |  77 +++--
+ debug.txt                          |  48 ++++
+ frontend/package.json              |  11 +-
+ frontend/src/lib/data/mock-data.ts |  21 --
+ frontend/src/lib/utils.ts          |   7 -
+ git_commit.txt                     |   5 +
+ git_push.txt                       |   2 +
+ log.bat                            |   3 +
+ pnpm-lock.yaml                     | 564 -------------------------------------
+ push.bat                           |   5 +-
+ push2.bat                          |   6 +
+ push3.bat                          |   6 +
+ push4.bat                          |   5 +
+ push5.bat                          |   9 +
+ 14 files changed, 136 insertions(+), 633 deletions(-)
+
+commit 6025737873ee6a76230db78d4dadfca8e4db756f
+Author: xhoneylemonx <peterbenjamin@outlook.co.th>
+Date:   Wed Sep 30 23:05:31 2026 +0700
+
+    fix: decouple frontend from prisma
+
+ data-dictionary.md    | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ frontend/package.json |  1 -
+ git_status.txt        | 15 +++++++++++++++
+ push.bat              |  5 +++++
+ 4 files changed, 65 insertions(+), 1 deletion(-)
+
+commit 65794d9253c5d8df1e5aad0f915e0d497a610809
+Author: xhoneylemonx <peterbenjamin@outlook.co.th>
+Date:   Wed Sep 30 22:23:04 2026 +0700
+
+    refactor(student-activity-matcher): decouple frontend from prisma
+
+ backend/.dockerignore                              |     6 +
+ backend/.env.example                               |    38 +
+ backend/Dockerfile                                 |    46 +
+ backend/docker/entrypoint.sh                       |     8 +
+ backend/eslint.config.mjs                          |    21 +
+ backend/jest-e2e.config.js                         |    11 +
+ backend/jest-integration.config.js                 |    13 +
+ backend/jest.config.js                             |    13 +
+ backend/nest-cli.json                              |     9 +
+ backend/package.json                               |    60 +
+ backend/prisma.config.ts                           |    32 +
+ .../migrations/20260928000000_init/migration.sql   |    60 +
+ .../migration.sql                                  |   197 +
+ .../migration.sql                                  |    32 +
+ backend/prisma/migrations/migration_lock.toml      |     3 +
+ backend/prisma/schema.prisma                       |   215 +
+ backend/prisma/seed-interests.ts                   |   198 +
+ backend/prisma/seed.ts                             |    76 +
+ backend/src/activities/activities.controller.ts    |    45 +
+ backend/src/activities/activities.module.ts        |    12 +
+ backend/src/activities/activities.service.ts       |    67 +
+ backend/src/activities/dto/create-activity.dto.ts  |    10 +
+ backend/src/app.module.ts                          |    40 +
+ backend/src/auth/auth-events.logger.ts             |    50 +
+ backend/src/auth/auth.errors.ts                    |    26 +
+ backend/src/auth/auth.module.ts                    |    20 +
+ backend/src/auth/core-hub-identity.ts              |    35 +
+ backend/src/auth/core-hub-token.verifier.spec.ts   |   175 +
+ backend/src/auth/core-hub-token.verifier.ts        |   134 +
+ .../decorators/core-hub-access-token.decorator.ts  |    18 +
+ .../src/auth/decorators/current-user.decorator.ts  |    10 +
+ backend/src/auth/decorators/public.decorator.ts    |     6 +
+ .../decorators/require-permissions.decorator.ts    |    12 +
+ backend/src/auth/dto/sso-callback.dto.ts           |    25 +
+ backend/src/auth/guards/core-hub-jwt.guard.ts      |   109 +
+ backend/src/auth/guards/permissions.guard.spec.ts  |    71 +
+ backend/src/auth/guards/permissions.guard.ts       |    53 +
+ backend/src/auth/jwks.service.spec.ts              |   212 +
+ backend/src/auth/jwks.service.ts                   |   235 +
+ backend/src/auth/me.controller.ts                  |    23 +
+ backend/src/auth/permissions.spec.ts               |    62 +
+ backend/src/auth/permissions.ts                    |    93 +
+ backend/src/auth/role-mapping.spec.ts              |    27 +
+ backend/src/auth/role-mapping.ts                   |    37 +
+ backend/src/auth/sso-callback.controller.ts        |   112 +
+ backend/src/auth/sso-session.ts                    |    58 +
+ backend/src/bookings/bookings.controller.ts        |    80 +
+ backend/src/bookings/bookings.module.ts            |    11 +
+ backend/src/bookings/bookings.service.spec.ts      |   237 +
+ backend/src/bookings/bookings.service.ts           |   214 +
+ backend/src/bookings/dto/create-booking.dto.ts     |    28 +
+ backend/src/bookings/dto/query-bookings.dto.ts     |    14 +
+ backend/src/bookings/dto/review-booking.dto.ts     |     9 +
+ backend/src/common/api-response.ts                 |    26 +
+ backend/src/common/dto/pagination.dto.ts           |    39 +
+ backend/src/common/errors.ts                       |    51 +
+ .../src/common/filters/all-exceptions.filter.ts    |   150 +
+ .../common/interceptors/response.interceptor.ts    |    18 +
+ backend/src/config/configuration.ts                |    55 +
+ backend/src/config/env.validation.ts               |    26 +
+ backend/src/core-hub/core-hub.module.ts            |    13 +
+ backend/src/core-hub/express-request.ts            |    14 +
+ .../src/core-hub/reference-data-events.logger.ts   |    22 +
+ .../src/core-hub/reference-data.service.spec.ts    |   226 +
+ backend/src/core-hub/reference-data.service.ts     |   274 +
+ backend/src/core-hub/reference-data.types.ts       |    36 +
+ backend/src/core-hub/reference-datasets.ts         |    18 +
+ backend/src/health/health.controller.ts            |    21 +
+ backend/src/health/health.module.ts                |     5 +
+ backend/src/main.ts                                |    46 +
+ backend/src/prisma/prisma.module.ts                |     9 +
+ backend/src/prisma/prisma.service.ts               |    31 +
+ backend/src/rooms/dto/query-rooms.dto.ts           |    10 +
+ backend/src/rooms/dto/room-code-param.dto.ts       |    10 +
+ backend/src/rooms/rooms.controller.ts              |    38 +
+ backend/src/rooms/rooms.module.ts                  |    12 +
+ backend/src/rooms/rooms.service.spec.ts            |    82 +
+ backend/src/rooms/rooms.service.ts                 |    92 +
+ backend/test/app.e2e-spec.ts                       |   587 +
+ backend/test/core-hub.integration-spec.ts          |   240 +
+ backend/test/e2e-setup.ts                          |    17 +
+ backend/test/helpers/fake-core-hub.ts              |   109 +
+ backend/test/helpers/in-memory-prisma.ts           |   216 +
+ backend/test/helpers/token-factory.ts              |   129 +
+ backend/test/sso-callback.e2e-spec.ts              |   346 +
+ backend/tsconfig.build.json                        |     4 +
+ backend/tsconfig.json                              |    25 +
+ copy_success.txt                                   |     1 +
+ frontend/.eslintrc.json                            |     3 +
+ frontend/jest.config.ts                            |    22 +
+ frontend/jest.setup.ts                             |     1 +
+ frontend/next-env.d.ts                             |     6 +
+ frontend/next.config.ts                            |     5 +
+ frontend/package.json                              |    45 +
+ frontend/postcss.config.mjs                        |     9 +
+ frontend/src/__tests__/sample.test.ts              |     9 +
+ .../admin/activities/AdminActivitiesClient.tsx     |    86 +
+ frontend/src/app/(admin)/admin/activities/page.tsx |    20 +
+ frontend/src/app/(admin)/admin/dashboard/page.tsx  |   216 +
+ .../app/(admin)/admin/groups/AdminGroupsClient.tsx |    75 +
+ frontend/src/app/(admin)/admin/groups/page.tsx     |    20 +
+ .../admin/interests/AdminInterestsClient.tsx       |   329 +
+ frontend/src/app/(admin)/admin/interests/page.tsx  |    19 +
+ .../(admin)/admin/students/AdminStudentsClient.tsx |    98 +
+ frontend/src/app/(admin)/admin/students/page.tsx   |     8 +
+ frontend/src/app/(admin)/admin/sync/SyncClient.tsx |   240 +
+ frontend/src/app/(admin)/admin/sync/page.tsx       |    17 +
+ frontend/src/app/(admin)/layout.tsx                |   109 +
+ .../app/(student)/activities/ActivitiesClient.tsx  |   137 +
+ .../activities/[id]/ActivityDetailClient.tsx       |   173 +
+ .../src/app/(student)/activities/[id]/page.tsx     |    23 +
+ .../activities/create/CreateActivityClient.tsx     |   142 +
+ .../src/app/(student)/activities/create/page.tsx   |    16 +
+ frontend/src/app/(student)/activities/page.tsx     |    20 +
+ .../app/(student)/dashboard/DashboardClient.tsx    |   176 +
+ frontend/src/app/(student)/dashboard/page.tsx      |     8 +
+ .../src/app/(student)/discover/DiscoverClient.tsx  |   289 +
+ frontend/src/app/(student)/discover/page.tsx       |    21 +
+ frontend/src/app/(student)/groups/GroupsClient.tsx |   106 +
+ .../(student)/groups/[id]/GroupDetailClient.tsx    |   129 +
+ frontend/src/app/(student)/groups/[id]/page.tsx    |    23 +
+ .../(student)/groups/create/CreateGroupClient.tsx  |   134 +
+ frontend/src/app/(student)/groups/create/page.tsx  |    16 +
+ frontend/src/app/(student)/groups/page.tsx         |    20 +
+ frontend/src/app/(student)/layout.tsx              |   136 +
+ .../src/app/(student)/matches/MatchesClient.tsx    |   131 +
+ frontend/src/app/(student)/matches/page.tsx        |    17 +
+ .../src/app/(student)/profile/ProfileClient.tsx    |   406 +
+ frontend/src/app/(student)/profile/page.tsx        |    21 +
+ .../app/(student)/students/StudentListClient.tsx   |   126 +
+ .../students/[id]/StudentDetailClient.tsx          |   161 +
+ frontend/src/app/(student)/students/[id]/page.tsx  |    27 +
+ frontend/src/app/(student)/students/page.tsx       |     8 +
+ frontend/src/app/api/admin/sync-reg/route.ts       |     5 +
+ frontend/src/app/globals.css                       |    85 +
+ frontend/src/app/layout.tsx                        |    22 +
+ frontend/src/app/login/page.tsx                    |   117 +
+ frontend/src/app/page.tsx                          |   117 +
+ frontend/src/lib/actions.ts                        |    75 +
+ frontend/src/lib/api/activities.ts                 |    52 +
+ frontend/src/lib/auth-context.tsx                  |    79 +
+ frontend/src/lib/data/activities.ts                |    61 +
+ frontend/src/lib/data/groups.ts                    |    33 +
+ frontend/src/lib/data/interests.ts                 |    66 +
+ frontend/src/lib/data/mock-data.ts                 |   421 +
+ frontend/src/lib/data/students.ts                  |    53 +
+ frontend/src/lib/services/matching.ts              |    32 +
+ frontend/src/lib/utils.ts                          |    35 +
+ frontend/src/types/index.ts                        |    99 +
+ frontend/tailwind.config.ts                        |    60 +
+ frontend/tsconfig.json                             |    40 +
+ merge_schema.js                                    |    77 +
+ package.json                                       |     2 +-
+ pnpm-lock.yaml                                     | 11913 +++++++++++++++++++
+ 154 files changed, 23652 insertions(+), 1 deletion(-)
+  origin/HEAD -> origin/main
+  origin/feature/student-activity-matcher/decouple-frontend-from-prisma
+  origin/main
