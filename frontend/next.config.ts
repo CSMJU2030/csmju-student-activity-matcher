@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 /**
@@ -9,6 +10,10 @@ import type { NextConfig } from "next";
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://127.0.0.1:3002";
 
 const nextConfig: NextConfig = {
+  // deployment.md 3: the image ships only the traced standalone server (DEP-04)
+  output: "standalone",
+  // pnpm keeps dependencies at the workspace root, so tracing has to start there
+  outputFileTracingRoot: path.join(__dirname, ".."),
   // Core Hub web origin for the "back to portal" link (ui-design-system.md 5.1).
   // Read under the standard name CORE_HUB_WEB_URL; the browser sees it as NEXT_PUBLIC_*.
   env: { NEXT_PUBLIC_CORE_HUB_WEB_URL: process.env.CORE_HUB_WEB_URL ?? "" },
