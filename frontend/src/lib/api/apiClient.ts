@@ -105,12 +105,13 @@ export async function apiSend<T = unknown>(method: string, url: string, body?: u
       // Validation errors put the useful part in `details` (one string per field).
       const details = json?.error?.details;
       const raw = Array.isArray(details) && details.length ? details : json?.error?.message ?? json?.message;
-      const error = Array.isArray(raw) ? raw.join(', ') : raw || `Request failed (${response.status})`;
+      const error = Array.isArray(raw) ? raw.join(', ') : raw || `ดำเนินการไม่สำเร็จ (${response.status}) กรุณาลองอีกครั้ง`;
       return { success: false, error, status: response.status };
     }
     return { success: true, data: (json?.data !== undefined ? json.data : json) as T };
-  } catch (error) {
-    return { success: false, error: error instanceof Error ? error.message : 'Network error', status: 0 };
+  } catch {
+    // Network failures surface as raw runtime text ("fetch failed"); show a Thai message instead.
+    return { success: false, error: 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาลองอีกครั้ง', status: 0 };
   }
 }
 
