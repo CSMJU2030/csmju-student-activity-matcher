@@ -78,7 +78,7 @@ describe('apiClient (browser)', () => {
 
   it('apiSend reports network failures instead of throwing', async () => {
     fetchMock.mockRejectedValue(new Error('Failed to fetch'));
-    await expect(apiSend('GET', '/x')).resolves.toEqual({ success: false, error: 'Failed to fetch', status: 0 });
+    await expect(apiSend('GET', '/x')).resolves.toEqual({ success: false, error: 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาลองอีกครั้ง', status: 0 });
   });
 
   it('toQuery skips empty values and joins arrays', () => {
