@@ -9,6 +9,7 @@ import { joinGroup, leaveGroup, deleteGroup } from "@/lib/actions";
 import { getInitials, formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+import { Notice } from "@/components/Notice";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { useRouter } from "next/navigation";
 
@@ -21,6 +22,7 @@ interface GroupClientProps {
 export function GroupDetailClient({ group, allStudents, allInterests }: GroupClientProps) {
     const { user } = useAuth();
     const [isPending, startTransition] = useTransition();
+    const [notice, setNotice] = useState<string | null>(null);
     const router = useRouter();
     const currentStudent = user?.studentId ? allStudents.find(s => s.id === user.studentId) : null;
 
@@ -41,7 +43,7 @@ export function GroupDetailClient({ group, allStudents, allInterests }: GroupCli
     const handleDelete = async () => {
         const result = await deleteGroup(group.id);
         if (result.success) router.push("/groups");
-        else alert(result.error);
+        else setNotice(result.error ?? "ไม่สามารถดำเนินการได้ กรุณาลองอีกครั้ง");
     };
 
     const handleJoinLeave = async () => {
@@ -50,7 +52,7 @@ export function GroupDetailClient({ group, allStudents, allInterests }: GroupCli
             const result = isMember
                 ? await leaveGroup(currentStudent.id, group.id)
                 : await joinGroup(currentStudent.id, group.id);
-            if (!result.success) alert(result.error);
+            if (!result.success) setNotice(result.error ?? "ไม่สามารถดำเนินการได้ กรุณาลองอีกครั้ง");
         });
     };
 
@@ -59,6 +61,8 @@ export function GroupDetailClient({ group, allStudents, allInterests }: GroupCli
             <Link href="/groups" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                 <Icon name="arrow-left" className="h-4 w-4" /> กลับไปหน้ากลุ่ม
             </Link>
+
+            <Notice message={notice} onClose={() => setNotice(null)} />
 
             {/* Header */}
             <div className="bg-card rounded-xl border border-border overflow-hidden">

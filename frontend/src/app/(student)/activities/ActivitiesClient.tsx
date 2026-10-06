@@ -8,6 +8,7 @@ import { InterestWithCategory } from "@/lib/data/interests";
 import { joinActivityFn, leaveActivityFn } from "@/lib/api/activities";
 import { formatDate, formatTime } from "@/lib/utils";
 import Link from "next/link";
+import { Notice } from "@/components/Notice";
 import { Icon } from "@/components/Icon";
 import { useRouter } from "next/navigation";
 
@@ -23,6 +24,7 @@ export function ActivitiesClient({ allStudents, allActivities, allInterests, err
     const router = useRouter();
     const currentStudent = user?.studentId ? allStudents.find(s => s.studentId === String(user.studentId) || s.id === String(user.studentId)) : null;
     const [search, setSearch] = useState("");
+    const [notice, setNotice] = useState<string | null>(null);
 
     const filteredActivities = useMemo(() => {
         if (!search) return allActivities;
@@ -33,7 +35,8 @@ export function ActivitiesClient({ allStudents, allActivities, allInterests, err
     }, [allActivities, search]);
 
     const handleJoinLeave = async (activityId: string, isJoined: boolean) => {
-        if (!currentStudent) { alert("กรุณาเข้าสู่ระบบก่อน"); return; }
+        if (!currentStudent) { setNotice("กรุณาเข้าสู่ระบบก่อน"); return; }
+        setNotice(null);
         try {
             if (isJoined) {
                 await leaveActivityFn(activityId);
@@ -42,7 +45,7 @@ export function ActivitiesClient({ allStudents, allActivities, allInterests, err
             }
             router.refresh();
         } catch (err: any) {
-            alert(err.message || "ไม่สามารถดำเนินการได้ กรุณาลองอีกครั้ง");
+            setNotice(err.message || "ไม่สามารถดำเนินการได้ กรุณาลองอีกครั้ง");
         }
     };
 
@@ -59,6 +62,8 @@ export function ActivitiesClient({ allStudents, allActivities, allInterests, err
                     <Icon name="plus" className="h-4 w-4" /> สร้างกิจกรรมใหม่
                 </Link>
             </div>
+
+            <Notice message={notice} onClose={() => setNotice(null)} />
 
             {error && (
                 <div role="alert" className="rounded-xl border border-error/30 bg-error-container text-on-error-container px-4 py-3 text-sm">
@@ -88,7 +93,7 @@ export function ActivitiesClient({ allStudents, allActivities, allInterests, err
                                 <Icon name="target" className="h-8 w-8 text-white" />
                             </div>
                             <div className="p-5">
-                                <div className="font-semibold text-lg">{activity.title}</div>
+                                <Link href={`/activities/${activity.id}`} className="block font-semibold text-lg hover:text-primary rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">{activity.title}</Link>
                                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{activity.description}</p>
 
                                 <div className="mt-3 space-y-1 text-xs text-muted-foreground">

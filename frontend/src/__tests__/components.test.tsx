@@ -3,6 +3,7 @@ import { cleanup } from '@testing-library/react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { ConfirmButton } from '@/components/ConfirmButton';
 import { PortalLink } from '@/components/PortalLink';
+import { Notice } from '@/components/Notice';
 import { InterestPicker } from '@/components/InterestPicker';
 import { InterestMultiSelect } from '@/components/InterestMultiSelect';
 import { InterestCategoryData, InterestWithCategory } from '@/lib/data/interests';
@@ -94,6 +95,21 @@ describe('PortalLink', () => {
 
   it('renders nothing when CORE_HUB_WEB_URL is not set', () => {
     const { container } = render(<PortalLink href="" />);
+    expect(container.firstChild).toBeNull();
+  });
+});
+
+describe('Notice', () => {
+  it('shows the message as an alert and can be closed', () => {
+    const onClose = vi.fn();
+    render(<Notice message="ทดสอบ" onClose={onClose} />);
+    expect(screen.getByRole('alert').textContent).toContain('ทดสอบ');
+    fireEvent.click(screen.getByRole('button', { name: 'ปิดข้อความ' }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders nothing without a message', () => {
+    const { container } = render(<Notice message={null} />);
     expect(container.firstChild).toBeNull();
   });
 });

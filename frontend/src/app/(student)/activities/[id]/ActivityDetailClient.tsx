@@ -9,6 +9,7 @@ import { joinActivityFn, leaveActivityFn } from "@/lib/api/activities";
 import { getInitials, formatDate, formatTime } from "@/lib/utils";
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
+import { Notice } from "@/components/Notice";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { deleteActivity } from "@/lib/actions";
 import { useRouter } from "next/navigation";
@@ -23,6 +24,7 @@ export function ActivityDetailClient({ activity, allStudents, allInterests }: Ac
     const { user } = useAuth();
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
+    const [notice, setNotice] = useState<string | null>(null);
 
     const currentStudent = user?.studentId ? allStudents.find(s => s.id === user.studentId) : null;
 
@@ -46,7 +48,7 @@ export function ActivityDetailClient({ activity, allStudents, allInterests }: Ac
     const handleDelete = async () => {
         const result = await deleteActivity(activity.id);
         if (result.success) router.push("/activities");
-        else alert(result.error);
+        else setNotice(result.error ?? "ไม่สามารถดำเนินการได้ กรุณาลองอีกครั้ง");
     };
 
     const handleJoinLeave = async () => {
@@ -60,7 +62,7 @@ export function ActivityDetailClient({ activity, allStudents, allInterests }: Ac
                 }
                 router.refresh();
             } catch (err: any) {
-                alert(err.message || "ไม่สามารถดำเนินการได้ กรุณาลองอีกครั้ง");
+                setNotice(err.message || "ไม่สามารถดำเนินการได้ กรุณาลองอีกครั้ง");
             }
         });
     };
@@ -70,6 +72,8 @@ export function ActivityDetailClient({ activity, allStudents, allInterests }: Ac
             <Link href="/activities" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                 <Icon name="arrow-left" className="h-4 w-4" /> กลับไปหน้ากิจกรรม
             </Link>
+
+            <Notice message={notice} onClose={() => setNotice(null)} />
 
             {/* Header */}
             <div className="bg-card rounded-xl border border-border overflow-hidden">
