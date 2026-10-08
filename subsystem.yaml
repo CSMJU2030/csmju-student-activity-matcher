@@ -2,7 +2,7 @@
 # schema: standards/schemas/subsystem.schema.json
 
 name: csmju-student-activity-matcher          # ต้องตรงกับทะเบียนใน Core Hub และกับ data.service ของ /api/health
-standards_version: "1.8.1"
+standards_version: "1.8.4"
 conformance_level: L3                 # L1 · L2 · L3 (ระบบที่มี UI ต้องถึง L3)
 
 # หน้าเว็บ (Next.js) เป็น origin เดียวของระบบ — /api/* และ /auth/* ส่งต่อไป NestJS

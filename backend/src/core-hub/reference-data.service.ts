@@ -57,7 +57,7 @@ export class ReferenceDataService {
   }
 
   private get baseUrl(): string {
-    return this.config.get<string>('coreHub.url', 'http://localhost:3000').replace(/\/+$/, '');
+    return this.config.get<string>('coreHub.url', '').replace(/\/+$/, '');
   }
 
   private get defaultTtlMs(): number {
