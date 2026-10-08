@@ -48,7 +48,7 @@ export class SsoCallbackController {
   ) {
     this.subsystemId = config.get<string>('subsystemId', 'csmju-student-activity-matcher');
     this.names = ssoCookieNames(this.subsystemId);
-    this.coreHubWebUrl = config.get<string>('coreHub.webUrl', 'http://localhost:3100').replace(/\/+$/, '');
+    this.coreHubWebUrl = config.get<string>('coreHub.webUrl', '').replace(/\/+$/, '');
     this.secure = config.get<string>('nodeEnv') === 'production';
   }
 

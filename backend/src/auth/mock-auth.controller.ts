@@ -46,7 +46,7 @@ export class MockAuthController {
       throw new HttpException('Invalid mock email provided', HttpStatus.BAD_REQUEST);
     }
 
-    const coreHubUrl = this.config.get<string>('coreHub.url', 'http://localhost:3000').replace(/\/+$/, '');
+    const coreHubUrl = this.config.get<string>('coreHub.url', '').replace(/\/+$/, '');
     let data: { access_token?: string; expires_in?: number };
     try {
       const res = await fetch(`${coreHubUrl}/api/v1/auth/login`, {

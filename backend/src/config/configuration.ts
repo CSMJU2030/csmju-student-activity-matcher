@@ -1,6 +1,8 @@
 /**
  * All environment-specific values live here. Nothing in the application code
- * may hard-code a URL, issuer, audience or secret (spec §30, §41.15).
+ * may hard-code a URL, issuer, audience or secret (spec §30, §41.15). The
+ * localhost values below are development defaults only — production must set
+ * every URL (env.validation.ts, standards deployment.md 3.4 and 4.2).
  */
 export interface AppConfig {
   nodeEnv: string;
